@@ -5,17 +5,13 @@ public class Key {
 	private static Key instance = null;
 	@SuppressWarnings("unused")
 	private int thePitch;
-	private int minorRaiseValue;
+	private int[] scalePitches;
+	private boolean isMajor;
 	private Key(int p, boolean isMajor) {
 		thePitch = p;
-		if(isMajor)
-		{
-			minorRaiseValue = 0;
-		}
-		else
-		{
-			minorRaiseValue = -1;
-		}
+		this.isMajor = isMajor;
+		scalePitches = new int[7];
+		setNotePitches();
 	}
 	
 	public static Key getInstance(int p, boolean isMajor) {
@@ -25,9 +21,29 @@ public class Key {
 	   return instance;
 	}
 	
+	private void setNotePitches()
+	{
+		scalePitches[0] = thePitch;
+		scalePitches[1] = thePitch + 2;
+		scalePitches[3] = thePitch + 5;
+		scalePitches[4] = thePitch + 7;
+		if (isMajor)
+		{
+			scalePitches[2] = thePitch + 4;
+			scalePitches[5] = thePitch + 9;
+			scalePitches[6] = thePitch + 11;
+		}
+		else
+		{
+			scalePitches[2] = thePitch + 3;
+			scalePitches[5] = thePitch + 8;
+			scalePitches[6] = thePitch + 10;
+		}
+	}
+	
 	public boolean isMajor()
 	{
-		return minorRaiseValue == 0;
+		return isMajor;
 	}
 	
 }
