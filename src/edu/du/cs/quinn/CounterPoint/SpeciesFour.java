@@ -1,5 +1,13 @@
 package edu.du.cs.quinn.CounterPoint;
 
-public class SpeciesFour {
+import edu.du.cs.quinn.Music.Line;
+
+public class SpeciesFour implements CounterPoint {
+
+	@Override
+	public Line assembleLines() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
