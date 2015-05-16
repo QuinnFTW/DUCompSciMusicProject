@@ -22,7 +22,7 @@ public class Key {
 	
 	public int getScalePitch(int degree)
 	{
-		return scalePitches[degree - 1];
+		return scalePitches[degree];
 	}
 	
 	private void setScalePitches()
