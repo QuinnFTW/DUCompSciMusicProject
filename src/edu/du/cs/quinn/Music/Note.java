@@ -11,6 +11,10 @@ public class Note {
 		degree = scaleDegree;
 	}
 	
+	public int getPitch() {
+		return pitch;
+	}
+	
 	public int intervalType(Note upperNote)
 	{
 		int upperDegree = upperNote.degree;
