@@ -3,7 +3,6 @@ package edu.du.cs.quinn.Music;
 
 public class Key {
 	private static Key instance = null;
-	@SuppressWarnings("unused")
 	private int thePitch;
 	private int[] scalePitches;
 	private boolean isMajor;
@@ -11,7 +10,7 @@ public class Key {
 		thePitch = p;
 		this.isMajor = isMajor;
 		scalePitches = new int[7];
-		setNotePitches();
+		setScalePitches();
 	}
 	
 	public static Key getInstance(int p, boolean isMajor) {
@@ -21,7 +20,12 @@ public class Key {
 	   return instance;
 	}
 	
-	private void setNotePitches()
+	public int getScalePitch(int degree)
+	{
+		return scalePitches[degree - 1];
+	}
+	
+	private void setScalePitches()
 	{
 		scalePitches[0] = thePitch;
 		scalePitches[1] = thePitch + 2;
