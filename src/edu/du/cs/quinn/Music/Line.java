@@ -10,15 +10,15 @@ public class Line {
 	}
 	
 	public void addNote(Note myNote) {
-		
+		myScore.add(myNote);
 	}
 	
 	public void removeNote(int index) {
-		
+		myScore.remove(index);
 	}
 	
 	public void removeEndNote() {
-		
+		myScore.remove(myScore.size());
 	}
 	
 	public int getSize() {
