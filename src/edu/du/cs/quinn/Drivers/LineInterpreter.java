@@ -31,22 +31,28 @@ public class LineInterpreter {
 		track = sequence.createTrack();
 	}
 
-	private void readLinesToMidi() {
-		for(int i=0;i<sopranoLine.getSize();i++) {
-			track.add(createNoteOnEvent(sopranoLine.getNote(i).getPitch(), i));
-			track.add(createNoteOffEvent(sopranoLine.getNote(i).getPitch(), i+1));
+	public void readLinesToMidi() {
+		if(sopranoLine!=null){
+			for(int i=0;i<sopranoLine.getSize();i++) {
+				track.add(createNoteOnEvent(sopranoLine.getNote(i).getPitch(), i));
+				track.add(createNoteOffEvent(sopranoLine.getNote(i).getPitch(), i+1));
+			}
 		}
-		for(int i=0;i<altoLine.getSize();i++) {
-			track.add(createNoteOnEvent(altoLine.getNote(i).getPitch(), i));
-			track.add(createNoteOffEvent(altoLine.getNote(i).getPitch(), i+1));
+		if(altoLine!=null){
+			for(int i=0;i<altoLine.getSize();i++) {
+				track.add(createNoteOnEvent(altoLine.getNote(i).getPitch(), i));
+				track.add(createNoteOffEvent(altoLine.getNote(i).getPitch(), i+1));
+			}
 		}
-		for(int i=0;i<bassLine.getSize();i++) {
-			track.add(createNoteOnEvent(bassLine.getNote(i).getPitch(), i));
-			track.add(createNoteOffEvent(bassLine.getNote(i).getPitch(), i+1));
+		if(bassLine!=null){
+			for(int i=0;i<bassLine.getSize();i++) {
+				track.add(createNoteOnEvent(bassLine.getNote(i).getPitch(), i));
+				track.add(createNoteOffEvent(bassLine.getNote(i).getPitch(), i+1));
+			}
 		}
 	}
 	
-	private void outputToMidi() {
+	public void outputToMidi() {
 		try {
 			MidiSystem.write(sequence, 0, outputFile);
 		}

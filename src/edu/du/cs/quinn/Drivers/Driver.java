@@ -1,15 +1,21 @@
 package edu.du.cs.quinn.Drivers;
 
 import java.util.*;
-
-import edu.du.cs.quinn.*;
+import edu.du.cs.quinn.Music.*;
 
 public class Driver {
-	private Scanner scanIn;
 
-	public void main(String[] args) {
-		scanIn = new Scanner(System.in);
+	public static void main(String[] args) {
+		Scanner scanIn = new Scanner(System.in);
 		String command = null;
+		Line myLine = new Line();
+		Note myNote = new Note(64, 0);
+		
+		myLine.addNote(myNote);
+		
+		LineInterpreter interpreter = new LineInterpreter(myLine,null,null,"counterpoint.midi");
+		interpreter.readLinesToMidi();
+		interpreter.outputToMidi();
 		
 		/*System.out.print("Which counterpoint are you running?(1,2,3,4): ");
 		command = scanIn.nextLine();
