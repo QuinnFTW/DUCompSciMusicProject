@@ -11,6 +11,11 @@ public class Note {
 		degree = scaleDegree;
 	}
 	
+	public boolean equals(Note other)
+	{
+		return (this.pitch == other.pitch) && (this.degree == other.degree);
+	}
+	
 	public int getPitch() {
 		return pitch;
 	}

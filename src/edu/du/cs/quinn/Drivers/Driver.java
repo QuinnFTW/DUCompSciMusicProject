@@ -11,7 +11,7 @@ public class Driver {
 		String command = null;
 		Line myLine = new Line();
 		Note myNote = new Note(64, 0);
-		Key myKey = Key.getInstance(60, true);
+		Key myKey = Key.getInstance(60, false);
 		SpeciesOne counter = new SpeciesOne(myKey);
 		
 		counter.assembleLines();

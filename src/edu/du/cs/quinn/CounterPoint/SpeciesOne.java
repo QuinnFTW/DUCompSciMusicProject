@@ -43,7 +43,7 @@ public class SpeciesOne implements CounterPoint {
 			decide = 4;
 			break;
 		case 2:
-			decide = 8;
+			decide = 7;
 			break;
 		}
 		
@@ -55,7 +55,7 @@ public class SpeciesOne implements CounterPoint {
 		}
 		
 		while(!theSopStack.isEmpty()) {
-			decide = rand.nextInt(2);
+			decide = rand.nextInt(3);
 			if(decide==0) {
 				int n = rand.nextInt(3);
 				switch(n) {
@@ -71,6 +71,14 @@ public class SpeciesOne implements CounterPoint {
 					myNote = new Note(myKey.getScalePitch(4),4);
 					sopranoLine.addNote(myNote);
 					break;
+				}
+				for ( Note nextPossibility : theSopStack.peek())
+				{
+					if (nextPossibility.equals(myNote))
+					{
+						theSopStack.pop();
+						break;
+					}
 				}
 			}
 			else {
