@@ -4,6 +4,6 @@ import edu.du.cs.quinn.Music.*;
 
 public interface CounterPoint {
 	
-	public Line assembleLines();
+	public void assembleLines();
 
 }

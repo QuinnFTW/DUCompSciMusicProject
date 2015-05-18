@@ -2,6 +2,7 @@ package edu.du.cs.quinn.Drivers;
 
 import java.util.*;
 import edu.du.cs.quinn.Music.*;
+import edu.du.cs.quinn.CounterPoint.*;
 
 public class Driver {
 
@@ -10,8 +11,12 @@ public class Driver {
 		String command = null;
 		Line myLine = new Line();
 		Note myNote = new Note(64, 0);
+		Key myKey = Key.getInstance(60, true);
+		SpeciesOne counter = new SpeciesOne(myKey);
 		
-		myLine.addNote(myNote);
+		counter.assembleLines();
+		
+		myLine = counter.getSopranoLine();
 		
 		LineInterpreter interpreter = new LineInterpreter(myLine,null,null,"counterpoint.midi");
 		interpreter.readLinesToMidi();

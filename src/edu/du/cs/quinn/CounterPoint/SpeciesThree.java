@@ -5,9 +5,8 @@ import edu.du.cs.quinn.Music.Line;
 public class SpeciesThree implements CounterPoint {
 
 	@Override
-	public Line assembleLines() {
-		// TODO Auto-generated method stub
-		return null;
+	public void assembleLines() {
+		
 	}
 
 }

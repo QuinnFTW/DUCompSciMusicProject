@@ -22,7 +22,10 @@ public class Key {
 	
 	public int getScalePitch(int degree)
 	{
-		return scalePitches[degree - 1];
+		int pitchClass = scalePitches[degree % 7];
+		int octave = degree / 7;
+		return pitchClass + octave * 12;
+		
 	}
 	
 	private void setScalePitches()
