@@ -7,6 +7,9 @@ import edu.du.cs.quinn.Music.Line;
 
 import javax.sound.midi.*;
 
+import edu.du.cs.quinn.Music.Line;
+import javax.sound.*;
+
 public class LineInterpreter {
 	private Line sopranoLine;
 	private Line altoLine;
@@ -16,6 +19,7 @@ public class LineInterpreter {
 	private Track track;
 	private static final int VELOCITY = 64;
 	
+
 	public LineInterpreter(Line lineOne, Line lineTwo, Line lineThree, String fileName) {
 		sopranoLine = lineOne;
 		altoLine = lineTwo;
