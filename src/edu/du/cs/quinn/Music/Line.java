@@ -28,5 +28,22 @@ public class Line {
 	public Note getNote(int index) {
 		return myScore.get(index);
 	}
+	
+	public boolean hasNextNote()
+	{
+		//TODO
+		return false;
+	}
+	
+	public Note getNextNote()
+	{
+		//TODO
+		return null;
+	}
+	
+	public void removeNextNote()
+	{
+		//TODO
+	}
 
 }
