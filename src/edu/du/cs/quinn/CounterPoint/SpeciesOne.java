@@ -8,15 +8,15 @@ import java.util.Stack;
 import java.util.HashSet;
 
 public class SpeciesOne implements CounterPoint {
-	private Line sopranoLine;
+	private Note myNote;
+	private Key myKey;
 	private Random rand;
+	private Line sopranoLine;
+	private Line altoLine;
+	private Line bassLine;
 	private Stack<ArrayList<Note>> theSopStack;
 	private Stack<ArrayList<Note>> theAltStakck;
 	private Stack<ArrayList<Note>> theBasStack;
-	private Line altoLine;
-	private Line bassLine;
-	private Note myNote;
-	private Key myKey;
 	
 	public SpeciesOne(Key myKey) {
 		this.myKey = myKey;

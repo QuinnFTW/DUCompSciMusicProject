@@ -9,35 +9,105 @@ public class Driver {
 	public static void main(String[] args) {
 		Scanner scanIn = new Scanner(System.in);
 		String command = null;
-		Line myLine = new Line();
-		Note myNote = new Note(64, 0);
+		LineInterpreter interpreter;
+		Line mySopLine = new Line();
+		Line myBasLine = new Line();
+		Line myAltLine = new Line();
+		SpeciesOne counterOne;
+		SpeciesTwo counterTwo;
+		SpeciesThree counterThree;
+		SpeciesFour counterFour;
+		HashMap<String,Integer> keyMap = new HashMap<String, Integer>();
+		
+		for(int i=-2;i<9;i++) {
+			for(int n=0;n<12;n++) {
+				switch(n) {
+				case 0:
+					keyMap.put("C"+i, n+(i*12));
+					break;
+				case 1:
+					keyMap.put("C#"+i, n+(i*12));
+					break;
+				case 2:
+					keyMap.put("D"+i, n+(i*12));
+					break;
+				case 3:
+					keyMap.put("D#"+i, n+(i*12));
+					break;
+				case 4:
+					keyMap.put("E"+i, n+(i*12));
+					break;
+				case 5:
+					keyMap.put("F"+i, n+(i*12));
+					break;
+				case 6:
+					keyMap.put("F#"+i, n+(i*12));
+					break;
+				case 7:
+					keyMap.put("G"+i, n+(i*12));
+					break;
+				case 8:
+					keyMap.put("G#"+i, n+(i*12));
+					break;
+				case 9:
+					keyMap.put("A"+i, n+(i*12));
+					break;
+				case 10:
+					keyMap.put("A#"+i, n+(i*12));
+					break;
+				case 11:
+					keyMap.put("B"+i, n+(i*12));
+					break;
+				}
+			}
+		}
+		
+		System.out.println("What key will this song be in?: ");
+		System.out.println("(e.g. A for A major, a for A minor, A# for A sharp major, a# for A sharp minor.)");
+		System.out.println("(Also include the number for the octive e.g. C0 for the normal octive)");
+		command = scanIn.nextLine();
+		
 		Key myKey = Key.getInstance(60, false);
-		SpeciesOne counter = new SpeciesOne(myKey);
 		
-		counter.assembleLines();
-		
-		myLine = counter.getSopranoLine();
-		
-		LineInterpreter interpreter = new LineInterpreter(myLine,null,null,"counterpoint.midi");
-		interpreter.readLinesToMidi();
-		interpreter.outputToMidi();
-		
-		/*System.out.print("Which counterpoint are you running?(1,2,3,4): ");
+		System.out.print("Which counterpoint are you running?(1,2,3,4): ");
 		command = scanIn.nextLine();
 		
 		switch(command) {
 		case "1":
+			counterOne = new SpeciesOne(myKey);
+			counterOne.assembleLines();
+			mySopLine = counterOne.getSopranoLine();
+			interpreter = new LineInterpreter(mySopLine,null,null,"counterpoint.midi");
+			interpreter.readLinesToMidi();
+			interpreter.outputToMidi();
+			break;
 		case "2":
+			counterTwo = new SpeciesTwo(myKey);
+			counterTwo.assembleLines();
+			mySopLine = counterTwo.getSopranoLine();
+			interpreter = new LineInterpreter(mySopLine,null,null,"counterpoint.midi");
+			interpreter.readLinesToMidi();
+			interpreter.outputToMidi();
+			break;
 		case "3":
+			counterThree = new SpeciesThree(myKey);
+			counterThree.assembleLines();
+			mySopLine = counterThree.getSopranoLine();
+			interpreter = new LineInterpreter(mySopLine,null,null,"counterpoint.midi");
+			interpreter.readLinesToMidi();
+			interpreter.outputToMidi();
+			break;
 		case "4":
-		default:
-		}	*/
+			counterFour = new SpeciesFour(myKey);
+			counterFour.assembleLines();
+			mySopLine = counterFour.getSopranoLine();
+			interpreter = new LineInterpreter(mySopLine,null,null,"counterpoint.midi");
+			interpreter.readLinesToMidi();
+			interpreter.outputToMidi();
+			break;
+		}	
 		
-		/*System.out.println("What key will this song be in?: ");
-		System.out.println("(e.g. A for A major, a for A minor, A# for A sharp major, a# for A sharp minor.)");
-		command = scanIn.nextLine();*/
-		
-		/*System.out.println("Your song has been created in the file 'counterpoint.midi'");*/
+		System.out.println("Your song has been created in the file 'counterpoint.midi'");
 	}
 
 }
