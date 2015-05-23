@@ -20,6 +20,11 @@ public class Note {
 		return pitch;
 	}
 	
+	public int hashCode()
+	{
+		return pitch * 2 - degree;
+	}
+	
 	public int intervalType(Note upperNote)
 	{
 		int upperDegree = upperNote.degree;
