@@ -102,7 +102,14 @@ public class Line {
 		}
 		for (Note n : activeNotes)
 		{
-			possibilities.addAll(possibleDependents(n));
+			for (Note p : possibleDependents(n))
+			{
+				int distance = aNote.getPitch() - p.getPitch();
+				if ((distance < 3 && distance > -3) || aNote.isIntervalConsonant(p))
+				{
+					possibilities.add(p);
+				}
+			}
 		}
 		possibleNotes.push(possibilities);
 		myScore.add(aNote);
@@ -239,6 +246,11 @@ public class Line {
 		return !possibleNotes.peek().isEmpty();
 	}
 	
+	public boolean isFinished()
+	{
+		return myScore.get(myScore.size() - 1).equals(finalNote) && requiredNext.isEmpty();
+	}
+	
 	private static HashSet<Note> possibleDependents(Note aNote)
 	{
 		HashSet<Note> possibilities = new HashSet<Note>();
@@ -270,6 +282,11 @@ public class Line {
 		return possibilities;
 	}
 	
+	public void removeNextNote(Note aNote)
+	{
+		possibleNotes.peek().remove(aNote);
+	}
+	
 	public static Note selectRandom(HashSet<Note> set)
 	{
 		int choose = (int)(Math.random() * set.size());
@@ -285,9 +302,9 @@ public class Line {
 		return null;
 	}
 	
-	public void removeNextNote(Note aNote)
+	public int size()
 	{
-		possibleNotes.peek().remove(aNote);
+		return myScore.size();
 	}
 
 }

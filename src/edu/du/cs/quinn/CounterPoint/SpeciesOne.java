@@ -21,70 +21,28 @@ public class SpeciesOne implements CounterPoint {
 	public SpeciesOne(Key myKey) {
 		this.myKey = myKey;
 		rand = new Random();
-		sopranoLine = new Line();
-		altoLine = new Line();
+		Note[] notes = { myKey.getScalarNote(2), myKey.getScalarNote(1), myKey.getScalarNote(0) };
+		sopranoLine = new Line(50, 80, notes);
+		/*altoLine = new Line();
 		bassLine = new Line();
+		*/
 	}
 	
 	public void assembleLines() {
-		theSopStack = new Stack<ArrayList<Note>>();
-		ArrayList<Note> theList = new ArrayList<Note>();
-		myNote = new Note(myKey.getScalePitch(0),0);
-		theList.add(myNote);
-		theSopStack.push(theList);
-		int decide = rand.nextInt(5);
-		switch(decide) {
-		case 0:
-		case 3:
-			decide = 2;
-			break;
-		case 1:
-		case 4:
-			decide = 4;
-			break;
-		case 2:
-			decide = 7;
-			break;
+		for (int i = 0; i < 3; i++)
+		{
+			sopranoLine.addNote(true);
 		}
 		
-		for (int i=1; i<=decide; i++) {
-			theList = new ArrayList<Note>();
-			myNote = new Note(myKey.getScalePitch(i),i);
-			theList.add(myNote);
-			theSopStack.push(theList);
-		}
-		
-		while(!theSopStack.isEmpty()) {
-			decide = rand.nextInt(3);
-			if(decide==0) {
-				int n = rand.nextInt(3);
-				switch(n) {
-				case 0:
-					myNote = new Note(myKey.getScalePitch(0),0);
-					sopranoLine.addNote(myNote);
-					break;
-				case 1:
-					myNote = new Note(myKey.getScalePitch(2),2);
-					sopranoLine.addNote(myNote);
-					break;
-				case 2:
-					myNote = new Note(myKey.getScalePitch(4),4);
-					sopranoLine.addNote(myNote);
-					break;
-				}
-				for ( Note nextPossibility : theSopStack.peek())
-				{
-					if (nextPossibility.equals(myNote))
-					{
-						theSopStack.pop();
-						break;
-					}
-				}
+		while(!sopranoLine.isFinished())
+		{
+			if (sopranoLine.hasNextNote() && sopranoLine.size() < 10)
+			{
+				sopranoLine.addNote(false);
 			}
-			else {
-				theList = theSopStack.pop();
-				int n = rand.nextInt(theList.size());
-				sopranoLine.addNote(theList.get(n));
+			else
+			{
+				sopranoLine.removeEndNote();
 			}
 		}
 	}
