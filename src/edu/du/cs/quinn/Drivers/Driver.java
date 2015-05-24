@@ -1,18 +1,20 @@
 package edu.du.cs.quinn.Drivers;
 
 import java.util.*;
+
 import edu.du.cs.quinn.Music.*;
 import edu.du.cs.quinn.CounterPoint.*;
 
 public class Driver {
 
 	public static void main(String[] args) {
+		@SuppressWarnings("resource")
 		Scanner scanIn = new Scanner(System.in);
 		String command = null;
 		LineInterpreter interpreter;
-		Line mySopLine = new Line();
-		Line myBasLine = new Line();
-		Line myAltLine = new Line();
+		Line mySopLine = null;
+		Line myBasLine = null;
+		Line myAltLine = null;
 		SpeciesOne counterOne;
 		SpeciesTwo counterTwo;
 		SpeciesThree counterThree;
@@ -77,7 +79,8 @@ public class Driver {
 			counterOne = new SpeciesOne(myKey);
 			counterOne.assembleLines();
 			mySopLine = counterOne.getSopranoLine();
-			interpreter = new LineInterpreter(mySopLine,null,null,"counterpoint.midi");
+			//myBasLine = counterOne.getBassLine();
+			interpreter = new LineInterpreter(mySopLine,null,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
 			break;
@@ -85,7 +88,9 @@ public class Driver {
 			counterTwo = new SpeciesTwo(myKey);
 			counterTwo.assembleLines();
 			mySopLine = counterTwo.getSopranoLine();
-			interpreter = new LineInterpreter(mySopLine,null,null,"counterpoint.midi");
+			//myAltLine = counterTwo.getAltoLine();
+			//myBasLine = counterTwo.getBassLine();
+			interpreter = new LineInterpreter(mySopLine,myAltLine,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
 			break;
@@ -93,7 +98,9 @@ public class Driver {
 			counterThree = new SpeciesThree(myKey);
 			counterThree.assembleLines();
 			mySopLine = counterThree.getSopranoLine();
-			interpreter = new LineInterpreter(mySopLine,null,null,"counterpoint.midi");
+			//myAltLine = counterThree.getAltoLine();
+			//myBasLine = counterThree.getBassLine();
+			interpreter = new LineInterpreter(mySopLine,myAltLine,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
 			break;
@@ -101,7 +108,9 @@ public class Driver {
 			counterFour = new SpeciesFour(myKey);
 			counterFour.assembleLines();
 			mySopLine = counterFour.getSopranoLine();
-			interpreter = new LineInterpreter(mySopLine,null,null,"counterpoint.midi");
+			//myAltLine = counterFour.getAltoLine();
+			//myBasLine = counterFour.getBassLine();
+			interpreter = new LineInterpreter(mySopLine,myAltLine,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
 			break;
@@ -111,3 +120,4 @@ public class Driver {
 	}
 
 }
+
