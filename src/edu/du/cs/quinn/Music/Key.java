@@ -6,6 +6,7 @@ import java.util.HashSet;
 public class Key {
 	private static Key instance = null;
 	private int thePitch;
+	private Note centerTonic;
 	private int[] scalePitches;
 	private boolean isMajor;
 	private Key(int p, boolean isMajor) {
@@ -13,6 +14,7 @@ public class Key {
 		this.isMajor = isMajor;
 		scalePitches = new int[7];
 		setScalePitches();
+		centerTonic = new Note(getScalePitch(0), 0);
 	}
 	
 	public static Key getInstance()
@@ -26,11 +28,10 @@ public class Key {
 	   }
 	   return instance;
 	}
-	
-	public HashSet<Note> getResolution(Note aNote)
+
+	public Note getScalarNote(int degree)
 	{
-		//TODO
-		return null;
+		return new Note(getScalePitch(degree), degree);
 	}
 	
 	public int getScalePitch(int degree)
@@ -67,6 +68,11 @@ public class Key {
 			lowDegree += 7;
 		}
 		return span;
+	}
+	
+	public Note getTonic()
+	{
+		return centerTonic;
 	}
 	
 	private void setScalePitches()

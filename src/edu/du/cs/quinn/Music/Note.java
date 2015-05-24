@@ -16,6 +16,11 @@ public class Note {
 		return (this.pitch == other.pitch) && (this.degree == other.degree);
 	}
 	
+	public int getDegree()
+	{
+		return degree;
+	}
+	
 	public int getPitch() {
 		return pitch;
 	}
