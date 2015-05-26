@@ -36,7 +36,12 @@ public class Key {
 	
 	public int getScalePitch(int degree)
 	{
-		int pitchClass = scalePitches[degree % 7];
+		int remainder = degree % 7;
+		if (remainder < 0)
+		{
+			remainder += 7;
+		}
+		int pitchClass = scalePitches[remainder];
 		int octave = degree / 7;
 		return pitchClass + (octave * 12);
 	}
@@ -58,13 +63,13 @@ public class Key {
 			{
 				break;
 			}
-			span.add(new Note(pitch, lowDegree));
+			span.add(new Note(pitch, lowDegree + 2));
 			pitch = getScalePitch(lowDegree + 4);
 			if (pitch > maxPitch)
 			{
 				break;
 			}
-			span.add(new Note(pitch, lowDegree));
+			span.add(new Note(pitch, lowDegree + 4));
 			lowDegree += 7;
 		}
 		return span;

@@ -1,42 +1,57 @@
 package edu.du.cs.quinn.Music;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 public class Line {
 	private ArrayList<Note> myScore;
-	private Stack<HashSet<Note>> possibleNotes;
+	private ArrayList<HashMap<Note, Integer>> possibleNotes;
 	private Stack<Integer> locationOfLastIncomplete;
 	private Stack<HashSet<Note>> requiredNext;
-	private Stack<Stack<HashSet<Note>>> fulfillments;
-	private Stack<Stack<Integer>> fulfillmentLocations;
-	private Note finalNote;
+	private Stack<Integer> locationOfLastSpanNote;
+	private ArrayList<Stack<HashSet<Note>>> fulfillments;
+	private ArrayList<Stack<Integer>> fulfillmentLocations;
+	private final Note finalNote;
 	private int spanLength;
+	private int minPitch;
+	private int maxPitch;
 	
 	public Line(int minPitch, int maxPitch, Note[] required) {
+		this.minPitch = minPitch;
+		this.maxPitch = maxPitch;
 		myScore = new ArrayList<Note>();
-		possibleNotes = new Stack<HashSet<Note>>();
+		possibleNotes = new ArrayList<HashMap<Note, Integer>>();
 		locationOfLastIncomplete = new Stack<Integer>();
+		locationOfLastSpanNote = new Stack<Integer>();
+		fulfillments = new ArrayList<Stack<HashSet<Note>>>();
+		fulfillmentLocations = new ArrayList<Stack<Integer>>();
 		requiredNext = new Stack<HashSet<Note>>();
-		fulfillments = new Stack<Stack<HashSet<Note>>>();
-		fulfillmentLocations = new Stack<Stack<Integer>>();
 		finalNote = required[required.length - 1];
-		for(Note note : required)
+		for(int i = required.length - 1; i >= 0; i--)
 		{
 			HashSet<Note> set = new HashSet<Note>();
-			set.add(note);
+			set.add(required[i]);
 			requiredNext.add(set);
 		}
 		spanLength = required.length;
 		
-		possibleNotes.push(Key.getInstance().getSpanNotes(minPitch, maxPitch));
+		HashMap<Note,Integer> allowableNotes = new HashMap<Note,Integer>();
+		for(Note n : Key.getInstance().getSpanNotes(minPitch, maxPitch))
+		{
+			allowableNotes.put(n, 0);
+		}
+		possibleNotes.add(allowableNotes);
 	}
 	
 	public Note addNote(boolean shouldExtend) {
-		HashSet<Note> possibilities = possibleNotes.peek();
+		
+		Set<Note> possibilities = possibleNotes.get(possibleNotes.size() - 1).keySet();
 		if(possibilities.isEmpty())
 		{
+			System.out.println(this);
 			System.err.println("Error: could not add a note");
 			System.exit(1);
 		}
@@ -44,24 +59,51 @@ public class Line {
 		if (!shouldExtend)
 		{
 			// check to see if it is possible to resolve the latest dependent note
-			HashSet<Note> possibleCompletions = requiredNext.peek();
-			if (!possibleCompletions.isEmpty())
+			if (!requiredNext.isEmpty())
 			{
-				Note n = selectRandom(possibleCompletions);
-				addNote(n);
-				return n;
+				HashSet<Note> possibleCompletions = new HashSet<Note>();
+				for(Note n : requiredNext.peek())
+				{
+					if(possibilities.contains(n))
+					{
+						possibleCompletions.add(n);
+					}
+				}
+				if (!possibleCompletions.isEmpty())
+				{
+					// if so, adds a randomly selected resolution
+					Note n = selectRandom(possibleCompletions);
+					addNote(n);
+					return n;
+				}
+			}
+			else
+			{
+				if (possibilities.contains(finalNote))
+				{
+					addNote(finalNote);
+					return finalNote;
+				}
 			}
 		}
+		// randomly selects a note to add
 		Note aNote = selectRandom(possibilities);
 		addNote(aNote);
 		return aNote;
 	}
 	
+	// does the meat of the work adding notes
 	private void addNote(Note aNote)
 	{
+		boolean isSpanNote = false;
+		
+		// if this note resolves anything, tie the things it resolves to its location
 		Stack<HashSet<Note>> fulfilled = new Stack<HashSet<Note>>();
 		Stack<Integer> fulfilledLocations = new Stack<Integer>();
-		boolean keepGoing = true;
+		fulfillments.add(fulfilled);
+		fulfillmentLocations.add(fulfilledLocations);
+		
+		boolean keepGoing = !requiredNext.isEmpty();
 		while(keepGoing)
 		{
 			keepGoing = false;
@@ -69,68 +111,76 @@ public class Line {
 			{
 				if (aNote.equals(n))
 				{
-					fulfilled.add(requiredNext.pop());
-					fulfilledLocations.add(locationOfLastIncomplete.pop());
-					keepGoing = true;
-					break;
+					if (requiredNext.size() <= spanLength)
+					{
+						locationOfLastSpanNote.push(size());
+						spanLength = requiredNext.size();
+						isSpanNote = true;
+					}
+					else
+					{
+						fulfilledLocations.push(locationOfLastIncomplete.pop());
+					}
+					fulfilled.push(requiredNext.pop());
+					keepGoing = !requiredNext.isEmpty();
 				}
 			}
 		}
-		fulfillments.add(fulfilled);
-		fulfillmentLocations.add(fulfilledLocations);
 		
-		boolean spanNote = requiredNext.size() < spanLength;
-		if (spanNote)
-		{
-			spanLength = requiredNext.size();
-		}
-		else
+		// actually add the note to the line
+		myScore.add(aNote);
+		
+		// if the note is dependent on others, push its possible resolutions to the "required" stack
+		// 		and push its location to the location stack
+		// 		and if it is dependent on a note that precedes other resolutions,
+		// 		add those resolutions to the stack as well.
+		if (!isSpanNote)
 		{
 			HashSet<Note> resolution = getResolution(aNote);
-			if(!resolution.isEmpty())
+			if (!resolution.isEmpty())
 			{
+				int dependLocation = possibleNotes.get(possibleNotes.size() - 1).get(aNote);
+				for (int i = size() - 2; i > dependLocation; i--)
+				{
+					Stack<Integer> currentLocations = fulfillmentLocations.get(i);
+					Stack<HashSet<Note>> currentRequirements = fulfillments.get(i);
+					for (int j = 0; j < currentLocations.size(); j++)
+					{
+						if (currentLocations.get(j) < dependLocation)
+						{
+							locationOfLastIncomplete.push(currentLocations.remove(j));
+							requiredNext.push(currentRequirements.remove(j));
+							j--;
+						}
+					}
+				}
 				requiredNext.push(resolution);
-				locationOfLastIncomplete.push(myScore.size());
+				locationOfLastIncomplete.push(size() - 1);
 			}
 		}
 		
-		HashSet<Note> activeNotes = new HashSet<Note>();
-		HashSet<Note> possibilities = new HashSet<Note>();
-		for (Note n : myScore.subList(locationOfLastIncomplete.peek(), myScore.size()))
+		// push the set of all possible next notes to possibilities
+		HashMap<Note,Integer> notes = new HashMap<Note,Integer>();
+		possibleNotes.add(notes);
+		
+		for (int i = size() - 1; i >= lastBlocker(); i--)
 		{
-			activeNotes.add(n);
-		}
-		for (Note n : activeNotes)
-		{
-			for (Note p : possibleDependents(n))
+			Note currentNote = myScore.get(i);
+			HashSet<Note> possibilities = possibleDependents(currentNote);
+			possibilities.addAll(Key.getInstance().getSpanNotes(aNote.getPitch() - 12, aNote.getPitch() + 12));
+			for(Note n : possibilities)
 			{
-				int distance = aNote.getPitch() - p.getPitch();
-				if ((distance < 3 && distance > -3) || aNote.isIntervalConsonant(p))
+				int distance = aNote.getPitch() - n.getPitch();
+				int degreeDistance = aNote.getDegree() - n.getDegree();
+				if (!notes.containsKey(n) && distance >= -12 && distance <= 12
+						&& n.getPitch() >= minPitch && n.getPitch() <= maxPitch
+						&& (aNote.isIntervalConsonant(n) || (degreeDistance <= 1 && degreeDistance >= -1)))
 				{
-					possibilities.add(p);
+					notes.put(n, i);
 				}
 			}
 		}
-		possibleNotes.push(possibilities);
-		myScore.add(aNote);
-	}
-	
-	public void removeEndNote() {
-		possibleNotes.pop();
-		possibleNotes.peek().remove(myScore.get(myScore.size() - 1));
-		while(!fulfillments.peek().isEmpty())
-		{
-			requiredNext.add(fulfillments.peek().pop());
-		}
-		while(!fulfillmentLocations.peek().isEmpty())
-		{
-			locationOfLastIncomplete.add(fulfillmentLocations.peek().pop());
-		}
-		myScore.remove(myScore.size() - 1);
-	}
-	
-	public int getSize() {
-		return myScore.size();
+		
 	}
 	
 	public Note getNote(int index) {
@@ -158,7 +208,7 @@ public class Line {
 			case 6:
 				if (theKey.isMajor())
 				{
-					for(Note n : myScore.subList(locationOfLastIncomplete.peek(), getSize()))
+					for(Note n : myScore.subList(locationOfLastIncomplete.peek(), size()))
 					{
 						if (n.equals(lowerNeighbor))
 						{
@@ -172,7 +222,7 @@ public class Line {
 			case 7:
 				if (theKey.isMajor())
 				{
-					for (Note n : myScore.subList(locationOfLastIncomplete.peek(), getSize()))
+					for (Note n : myScore.subList(locationOfLastIncomplete.peek(), size()))
 					{
 						if (n.equals(upperNeighbor))
 						{
@@ -186,7 +236,7 @@ public class Line {
 				{
 					boolean hasUpper = false;
 					boolean hasLower = false;
-					for (Note n : myScore.subList(locationOfLastIncomplete.peek(), getSize()))
+					for (Note n : myScore.subList(lastBlocker(), size()))
 					{
 						if ((!hasUpper) && n.equals(upperNeighbor))
 						{
@@ -219,7 +269,11 @@ public class Line {
 				Note lowerNeighbor = theKey.getScalarNote(degree - 1);
 				boolean hasUpper = false;
 				boolean hasLower = false;
-				for (Note n : myScore.subList(locationOfLastIncomplete.peek(), getSize()))
+				if (lastBlocker() > size() - 1)
+				{
+					System.out.println(this);
+				}
+				for (Note n : myScore.subList(lastBlocker(), size() - 1))
 				{
 					if ((!hasUpper) && n.equals(upperNeighbor))
 					{
@@ -243,12 +297,25 @@ public class Line {
 	
 	public boolean hasNextNote()
 	{
-		return !possibleNotes.peek().isEmpty();
+		return !possibleNotes.get(possibleNotes.size() - 1).isEmpty();
 	}
 	
 	public boolean isFinished()
 	{
-		return myScore.get(myScore.size() - 1).equals(finalNote) && requiredNext.isEmpty();
+		return myScore.get(myScore.size() - 1).equals(finalNote) && requiredNext.peek().contains(finalNote);
+	}
+	
+	private int lastBlocker()
+	{
+		if (locationOfLastIncomplete.isEmpty())
+		{
+			if (locationOfLastSpanNote.isEmpty())
+			{
+				return 0;
+			}
+			return locationOfLastSpanNote.peek();
+		}
+		return locationOfLastIncomplete.peek();
 	}
 	
 	private static HashSet<Note> possibleDependents(Note aNote)
@@ -282,12 +349,51 @@ public class Line {
 		return possibilities;
 	}
 	
-	public void removeNextNote(Note aNote)
-	{
-		possibleNotes.peek().remove(aNote);
+	public void removeEndNote() {
+		if (possibleNotes.size() == 1)
+		{
+			possibleNotes = new ArrayList<HashMap<Note, Integer>>();
+			HashMap<Note,Integer> allowableNotes = new HashMap<Note,Integer>();
+			for(Note n : Key.getInstance().getSpanNotes(minPitch, maxPitch))
+			{
+				allowableNotes.put(n, 0);
+			}
+			possibleNotes.add(allowableNotes);
+			return;
+		}
+		if (!locationOfLastSpanNote.isEmpty() && locationOfLastSpanNote.peek() == size() - 1)
+		{
+			locationOfLastSpanNote.pop();
+			spanLength++;
+		}
+		Note aNote = myScore.get(size() - 1);
+		System.out.println("Line" + this);
+		possibleNotes.remove(possibleNotes.size() - 1);
+		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
+		while(locationOfLastIncomplete.peek() >= size())
+		{
+			locationOfLastIncomplete.pop();
+			requiredNext.pop();
+		}
+		Stack<HashSet<Note>> f = fulfillments.get(fulfillments.size() - 1);
+		while(!f.isEmpty())
+		{
+			requiredNext.push(f.pop());
+		}
+		Stack<Integer> l = fulfillmentLocations.get(fulfillmentLocations.size() - 1);
+		while(!l.isEmpty())
+		{
+			locationOfLastIncomplete.push(l.pop());
+		}
+		
 	}
 	
-	public static Note selectRandom(HashSet<Note> set)
+	public void removeNextNote(Note aNote)
+	{
+		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
+	}
+	
+	public static Note selectRandom(Set<Note> set)
 	{
 		int choose = (int)(Math.random() * set.size());
 		int i = 0;
@@ -305,6 +411,16 @@ public class Line {
 	public int size()
 	{
 		return myScore.size();
+	}
+	
+	public String toString()
+	{
+		String string = "";
+		for (Note n : myScore)
+		{
+			string += n + "\n";
+		}
+		return string;
 	}
 
 }

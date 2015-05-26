@@ -38,7 +38,12 @@ public class Note {
 		{
 			return 1;
 		}
-		return (upperDegree - lowerDegree - 1) % 7 + 2;
+		int tempType = (upperDegree - lowerDegree - 1) % 7;
+		if (tempType < 0)
+		{
+			tempType += 7;
+		}
+		return tempType + 2;
 	}
 	
 	public boolean isIntervalConsonant(Note upperNote)
@@ -46,6 +51,10 @@ public class Note {
 		boolean perfect;
 		int perfectOrMajorDistance;
 		int actualDistance = (upperNote.pitch - this.pitch) % 12;
+		if (actualDistance < 0)
+		{
+			actualDistance += 12;
+		}
 		switch(intervalType(upperNote))
 		{
 		case 2:
