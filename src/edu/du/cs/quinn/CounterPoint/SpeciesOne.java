@@ -58,5 +58,11 @@ public class SpeciesOne implements CounterPoint {
 	public Line getBassLine() {
 		return bassLine;
 	}
+	
+	private boolean isLocallyGood()
+	{
+		
+		return true;
+	}
 
 }

@@ -370,7 +370,7 @@ public class Line {
 		System.out.println("Line" + this);
 		possibleNotes.remove(possibleNotes.size() - 1);
 		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
-		while(locationOfLastIncomplete.peek() >= size())
+		while(!locationOfLastIncomplete.isEmpty() && locationOfLastIncomplete.peek() >= size())
 		{
 			locationOfLastIncomplete.pop();
 			requiredNext.pop();
