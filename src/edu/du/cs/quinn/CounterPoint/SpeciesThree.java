@@ -22,9 +22,6 @@ public class SpeciesThree implements CounterPoint {
 	public SpeciesThree(Key myKey) {
 		this.myKey = myKey;
 		rand = new Random();
-		sopranoLine = new Line();
-		altoLine = new Line();
-		bassLine = new Line();
 	}
 
 	@Override

@@ -37,19 +37,19 @@ public class LineInterpreter {
 
 	public void readLinesToMidi() {
 		if(sopranoLine!=null){
-			for(int i=0;i<sopranoLine.getSize();i++) {
+			for(int i=0;i<sopranoLine.size();i++) {
 				track.add(createNoteOnEvent(sopranoLine.getNote(i).getPitch(), i));
 				track.add(createNoteOffEvent(sopranoLine.getNote(i).getPitch(), i+1));
 			}
 		}
 		if(altoLine!=null){
-			for(int i=0;i<altoLine.getSize();i++) {
+			for(int i=0;i<altoLine.size();i++) {
 				track.add(createNoteOnEvent(altoLine.getNote(i).getPitch(), i));
 				track.add(createNoteOffEvent(altoLine.getNote(i).getPitch(), i+1));
 			}
 		}
 		if(bassLine!=null){
-			for(int i=0;i<bassLine.getSize();i++) {
+			for(int i=0;i<bassLine.size();i++) {
 				track.add(createNoteOnEvent(bassLine.getNote(i).getPitch(), i));
 				track.add(createNoteOffEvent(bassLine.getNote(i).getPitch(), i+1));
 			}
