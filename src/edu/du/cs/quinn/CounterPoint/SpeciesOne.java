@@ -14,26 +14,58 @@ public class SpeciesOne implements CounterPoint {
 	private Line sopranoLine;
 	private Line altoLine;
 	private Line bassLine;
-	private Stack<ArrayList<Note>> theSopStack;
-	private Stack<ArrayList<Note>> theAltStakck;
-	private Stack<ArrayList<Note>> theBasStack;
 	
 	public SpeciesOne(Key myKey) {
 		this.myKey = myKey;
 		rand = new Random();
-		Note[] notes = { myKey.getScalarNote(2), myKey.getScalarNote(1), myKey.getScalarNote(0) };
-		sopranoLine = new Line(50, 80, notes);
+		int minSoprano = 50;
+		int maxSoprano = 80;
+		HashSet<Note> spanNotes = myKey.getSpanNotes(minSoprano, maxSoprano);
+		ArrayList<Note> listOfNotes = null;
+		while(!spanNotes.isEmpty())
+		{
+			listOfNotes = new ArrayList<Note>();
+			Note firstNote = Line.selectRandom(spanNotes);
+			listOfNotes.add(firstNote);
+			int i;
+			for(i = firstNote.getDegree() - 1; i % 7 != 0; i--)
+			{
+				listOfNotes.add(myKey.getScalarNote(i));
+			}
+			Note finalNote = myKey.getScalarNote(i);
+			if (!(finalNote.getPitch() < minSoprano))
+			{
+				listOfNotes.add(finalNote);
+				break;
+			}
+			
+		}
+		
+		if (listOfNotes.isEmpty())
+		{
+			System.err.println("something went wrong initializing the soprano line");
+			System.exit(2);
+		}
+		
+		Note[] actualNotes = new Note[listOfNotes.size()];
+		
+		for(int i = 0; i < listOfNotes.size(); i++)
+		{
+			actualNotes[i] = listOfNotes.get(i);
+		}
+		
+		sopranoLine = new Line(minSoprano, maxSoprano, actualNotes);
 		/*altoLine = new Line();
 		bassLine = new Line();
 		*/
 	}
 	
 	public void assembleLines() {
+		System.out.println("started");
 		for (int i = 0; i < 3; i++)
 		{
 			sopranoLine.addNote(true);
 		}
-		
 		while(!sopranoLine.isFinished())
 		{
 			if (sopranoLine.hasNextNote() && sopranoLine.size() < 10)
@@ -45,6 +77,7 @@ public class SpeciesOne implements CounterPoint {
 				sopranoLine.removeEndNote();
 			}
 		}
+		System.out.println("FINISHED");
 	}
 
 	public Line getSopranoLine() {

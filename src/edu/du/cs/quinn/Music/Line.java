@@ -302,7 +302,9 @@ public class Line {
 	
 	public boolean isFinished()
 	{
-		return myScore.get(myScore.size() - 1).equals(finalNote) && requiredNext.peek().contains(finalNote);
+		return !myScore.isEmpty() 
+				&& myScore.get(myScore.size() - 1).equals(finalNote)
+				&& requiredNext.isEmpty();
 	}
 	
 	private int lastBlocker()
@@ -361,16 +363,15 @@ public class Line {
 			possibleNotes.add(allowableNotes);
 			return;
 		}
-		if (!locationOfLastSpanNote.isEmpty() && locationOfLastSpanNote.peek() == size() - 1)
+		if (!locationOfLastSpanNote.isEmpty() && locationOfLastSpanNote.peek() >= size() - 1)
 		{
 			locationOfLastSpanNote.pop();
 			spanLength++;
 		}
 		Note aNote = myScore.get(size() - 1);
-		System.out.println("Line" + this);
 		possibleNotes.remove(possibleNotes.size() - 1);
 		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
-		while(!locationOfLastIncomplete.isEmpty() && locationOfLastIncomplete.peek() >= size())
+		if(!locationOfLastIncomplete.isEmpty() && locationOfLastIncomplete.peek() >= size() - 1)
 		{
 			locationOfLastIncomplete.pop();
 			requiredNext.pop();
@@ -385,7 +386,7 @@ public class Line {
 		{
 			locationOfLastIncomplete.push(l.pop());
 		}
-		
+		myScore.remove(size() - 1);
 	}
 	
 	public void removeNextNote(Note aNote)
@@ -419,6 +420,7 @@ public class Line {
 		for (Note n : myScore)
 		{
 			string += n + "\n";
+			
 		}
 		return string;
 	}
