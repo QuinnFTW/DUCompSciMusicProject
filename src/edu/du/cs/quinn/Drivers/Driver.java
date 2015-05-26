@@ -79,8 +79,9 @@ public class Driver {
 			counterOne = new SpeciesOne(myKey);
 			counterOne.assembleLines();
 			mySopLine = counterOne.getSopranoLine();
+			//myAltLine = counterTwo.getAltoLine();
 			//myBasLine = counterOne.getBassLine();
-			interpreter = new LineInterpreter(mySopLine,null,myBasLine,"counterpoint.midi");
+			interpreter = new LineInterpreter(mySopLine,myAltLine,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
 			break;
