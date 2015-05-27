@@ -11,9 +11,14 @@ public class Note {
 		degree = scaleDegree;
 	}
 	
-	public boolean equals(Note other)
+	public boolean equals(Object other)
 	{
-		return (this.pitch == other.pitch) && (this.degree == other.degree);
+		if (other == null || other.getClass() != Note.class)
+		{
+			return false;
+		}
+		Note otherNote = (Note)other;
+		return (this.pitch == otherNote.pitch) && (this.degree == otherNote.degree);
 	}
 	
 	public int getDegree()

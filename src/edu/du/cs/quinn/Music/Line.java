@@ -3,6 +3,7 @@ package edu.du.cs.quinn.Music;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
@@ -18,6 +19,7 @@ public class Line {
 	private int spanLength;
 	private int minPitch;
 	private int maxPitch;
+	private static final Random rand = new Random();
 	
 	public Line(int minPitch, int maxPitch, Note[] required) {
 		this.minPitch = minPitch;
@@ -71,6 +73,7 @@ public class Line {
 				}
 				if (!possibleCompletions.isEmpty())
 				{
+					System.out.println("I found a match!");
 					// if so, adds a randomly selected resolution
 					Note n = selectRandom(possibleCompletions);
 					addNote(n);
@@ -114,7 +117,7 @@ public class Line {
 					if (requiredNext.size() <= spanLength)
 					{
 						locationOfLastSpanNote.push(size());
-						spanLength = requiredNext.size();
+						spanLength = requiredNext.size() - 1;
 						isSpanNote = true;
 					}
 					else
@@ -140,7 +143,7 @@ public class Line {
 			if (!resolution.isEmpty())
 			{
 				int dependLocation = possibleNotes.get(possibleNotes.size() - 1).get(aNote);
-				for (int i = size() - 2; i > dependLocation; i--)
+				for (int i = size() - 2; i >= dependLocation; i--)
 				{
 					Stack<Integer> currentLocations = fulfillmentLocations.get(i);
 					Stack<HashSet<Note>> currentRequirements = fulfillments.get(i);
@@ -159,28 +162,20 @@ public class Line {
 			}
 		}
 		
-		// push the set of all possible next notes to possibilities
-		HashMap<Note,Integer> notes = new HashMap<Note,Integer>();
-		possibleNotes.add(notes);
-		
-		for (int i = size() - 1; i >= lastBlocker(); i--)
+		setPossibilities();
+	}
+	public int loc()
+	{
+		if (locationOfLastIncomplete.isEmpty())
 		{
-			Note currentNote = myScore.get(i);
-			HashSet<Note> possibilities = possibleDependents(currentNote);
-			possibilities.addAll(Key.getInstance().getSpanNotes(aNote.getPitch() - 12, aNote.getPitch() + 12));
-			for(Note n : possibilities)
-			{
-				int distance = aNote.getPitch() - n.getPitch();
-				int degreeDistance = aNote.getDegree() - n.getDegree();
-				if (!notes.containsKey(n) && distance >= -12 && distance <= 12
-						&& n.getPitch() >= minPitch && n.getPitch() <= maxPitch
-						&& (aNote.isIntervalConsonant(n) || (degreeDistance <= 1 && degreeDistance >= -1)))
-				{
-					notes.put(n, i);
-				}
-			}
+			return 0;
 		}
-		
+		return locationOfLastIncomplete.peek();
+	}
+	
+	public int depth()
+	{
+		return requiredNext.size();
 	}
 	
 	public Note getNote(int index) {
@@ -192,9 +187,10 @@ public class Line {
 		HashSet<Note> resolution = new HashSet<Note>();
 		int degree = aNote.getDegree();
 		Key theKey = Key.getInstance();
+		int pitch = aNote.getPitch();
 		int expectedPitch = theKey.getScalePitch(degree);
 		int typeOfNote = theKey.getTonic().intervalType(aNote);
-		if (aNote.getPitch() == expectedPitch)
+		if (pitch == expectedPitch)
 		{
 			Note lowerNeighbor = theKey.getScalarNote(degree - 1);
 			Note upperNeighbor = theKey.getScalarNote(degree + 1);
@@ -263,9 +259,9 @@ public class Line {
 			{
 				resolution.add(theKey.getScalarNote(degree + 1));
 			}
-			else
+			else if (typeOfNote == 6)
 			{
-				Note upperNeighbor = new Note(theKey.getScalePitch(degree + 1) + 1, degree + 1);
+				Note upperNeighbor = new Note(pitch + 2, degree + 1);
 				Note lowerNeighbor = theKey.getScalarNote(degree - 1);
 				boolean hasUpper = false;
 				boolean hasLower = false;
@@ -352,16 +348,9 @@ public class Line {
 	}
 	
 	public void removeEndNote() {
-		if (possibleNotes.size() == 1)
+		if (size() == 0)
 		{
-			possibleNotes = new ArrayList<HashMap<Note, Integer>>();
-			HashMap<Note,Integer> allowableNotes = new HashMap<Note,Integer>();
-			for(Note n : Key.getInstance().getSpanNotes(minPitch, maxPitch))
-			{
-				allowableNotes.put(n, 0);
-			}
-			possibleNotes.add(allowableNotes);
-			return;
+			System.err.println("Could not remove another note. It probably became impossible to finish");
 		}
 		if (!locationOfLastSpanNote.isEmpty() && locationOfLastSpanNote.peek() >= size() - 1)
 		{
@@ -394,9 +383,15 @@ public class Line {
 		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
 	}
 	
+	public void resetPossibilities()
+	{
+		possibleNotes.remove(possibleNotes.size() - 1);
+		setPossibilities();
+	}
+	
 	public static Note selectRandom(Set<Note> set)
 	{
-		int choose = (int)(Math.random() * set.size());
+		int choose = rand.nextInt(set.size());
 		int i = 0;
 		for(Note n : set)
 		{
@@ -407,6 +402,42 @@ public class Line {
 			i++;
 		}
 		return null;
+	}
+	
+	private void setPossibilities()
+	{
+		Note aNote = myScore.get(size() - 1);
+		// push the set of all possible next notes to possibilities
+		HashMap<Note,Integer> notes = new HashMap<Note,Integer>();
+		possibleNotes.add(notes);
+		
+		for (int i = size() - 1; i >= lastBlocker(); i--)
+		{
+			Note currentNote = myScore.get(i);
+			HashSet<Note> possibilities = possibleDependents(currentNote);
+			possibilities.addAll(Key.getInstance().getSpanNotes(aNote.getPitch() - 12, aNote.getPitch() + 12));
+			for(Note n : possibilities)
+			{
+				int distance = aNote.getPitch() - n.getPitch();
+				int degreeDistance = aNote.getDegree() - n.getDegree();
+				if (!notes.containsKey(n) && distance >= -12 && distance <= 12
+						&& n.getPitch() >= minPitch && n.getPitch() <= maxPitch
+						&& (aNote.isIntervalConsonant(n) || (degreeDistance <= 1 && degreeDistance >= -1)))
+				{
+					notes.put(n, i);
+				}
+			}
+		}
+		
+		// there can't be a note repeated three times
+		if (size() >= 2)
+		{
+			if(aNote.equals(myScore.get(size() - 2)))
+			{
+				notes.remove(aNote);
+			}
+		}
+		
 	}
 	
 	public int size()
@@ -421,6 +452,16 @@ public class Line {
 		{
 			string += n + "\n";
 			
+		}
+		string += "incompletes:\n";
+		for (Integer i : locationOfLastIncomplete)
+		{
+			string += i + "\n";
+		}
+		string += "spans:\n";
+		for (Integer i : locationOfLastSpanNote)
+		{
+			string += i + "\n";
 		}
 		return string;
 	}

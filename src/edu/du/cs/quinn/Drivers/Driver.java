@@ -115,7 +115,7 @@ public class Driver {
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
 			break;
-		}	
+		}
 		
 		System.out.println("Your song has been created in the file 'counterpoint.midi'");
 	}
