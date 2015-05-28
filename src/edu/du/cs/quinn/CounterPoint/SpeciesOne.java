@@ -50,7 +50,7 @@ public class SpeciesOne implements CounterPoint {
 			switch(index % numberOfLines)
 			{
 			case 0:
-				if (bassLine.hasNextNote() && index < maxLength * numberOfLines - 1)
+				if (bassLine.hasNextNote() && index < maxLength * numberOfLines - 2)
 				{
 					//System.out.println("add base");
 					bassLine.addNote(false);
@@ -410,7 +410,9 @@ public class SpeciesOne implements CounterPoint {
 		return upperIsTonic && lowerIsTonic
 				&& sopranoLine.isFinished()
 				&& altoLine.isFinished()
-				&& bassLine.isFinished();
+				&& bassLine.isFinished()
+				&& altoLine.size() == bassLine.size()
+				&& altoLine.size() == sopranoLine.size();
 	}
 
 }
