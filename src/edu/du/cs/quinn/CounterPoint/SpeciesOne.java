@@ -15,6 +15,7 @@ public class SpeciesOne implements CounterPoint {
 	private Line sopranoLine;
 	private Line altoLine;
 	private Line bassLine;
+	private int minLength;
 	private int maxLength;
 	private final int numberOfLines = 2;
 	
@@ -25,113 +26,15 @@ public class SpeciesOne implements CounterPoint {
 		int maxSoprano = 80;
 		int minBass = 30;
 		int maxBass = 50;
-		maxLength = 6;
+		minLength = 4;
+		maxLength = 7;
 		
 		// creating the soprano line
-		HashSet<Note> spanNotes = myKey.getSpanNotes(minSoprano, maxSoprano);
-		ArrayList<Note> listOfNotes = null;
-		while(!spanNotes.isEmpty())
-		{
-			listOfNotes = new ArrayList<Note>();
-			Note firstNote = Line.selectRandom(spanNotes);
-			listOfNotes.add(firstNote);
-			int i;
-			for(i = firstNote.getDegree() - 1; i % 7 != 0; i--)
-			{
-				listOfNotes.add(myKey.getScalarNote(i));
-			}
-			Note finalNote = myKey.getScalarNote(i);
-			if (!(finalNote.getPitch() < minSoprano))
-			{
-				listOfNotes.add(finalNote);
-				break;
-			}
-			
-		}
-		
-		if (listOfNotes.isEmpty())
-		{
-			System.err.println("something went wrong initializing the soprano line");
-			System.exit(2);
-		}
-		
-		Note[] actualNotes = new Note[listOfNotes.size()];
-		
-		for(int i = 0; i < listOfNotes.size(); i++)
-		{
-			actualNotes[i] = listOfNotes.get(i);
-		}
-		
-		sopranoLine = new Line(minSoprano, maxSoprano, actualNotes);
+		sopranoLine = new Line(minSoprano, maxSoprano);
 
 		
 		// creating the bass line
-		Note firstNote = null;
-		int i;
-		if (myKey.getScalePitch(0) < minBass)
-		{
-			i = 7;
-			while (firstNote == null)
-			{
-				if (myKey.getScalePitch(i) >= minBass)
-				{
-					firstNote = myKey.getScalarNote(i);
-				}
-				i += 7;
-			}
-		}
-		else if (myKey.getScalePitch(0) > maxBass)
-		{
-			i = -7;
-			while (firstNote == null)
-			{
-				if (myKey.getScalePitch(i) <= maxBass)
-				{
-					firstNote = myKey.getScalarNote(i);
-				}
-				i -= 7;
-			}
-		}
-		else
-		{
-			firstNote = myKey.getScalarNote(0);
-			i = 0;
-		}
-		
-		HashSet<Note> choices = new HashSet<Note>();
-		Note noteToAdd = myKey.getScalarNote(i + 4);
-		if (noteToAdd.getPitch() >= minBass && noteToAdd.getPitch() <= maxBass)
-		{
-			choices.add(noteToAdd);
-		}
-		noteToAdd = myKey.getScalarNote(i - 3);
-		if (noteToAdd.getPitch() >= minBass && noteToAdd.getPitch() <= maxBass)
-		{
-			choices.add(noteToAdd);
-		}
-		Note middleNote = Line.selectRandom(choices);
-		
-		choices = new HashSet<Note>();
-		choices.add(firstNote);
-		noteToAdd = myKey.getScalarNote(i + 7);
-		if (noteToAdd.getPitch() >= minBass && noteToAdd.getPitch() <= maxBass)
-		{
-			choices.add(noteToAdd);
-		}
-		noteToAdd = myKey.getScalarNote(i - 7);
-		if (noteToAdd.getPitch() >= minBass && noteToAdd.getPitch() <= maxBass)
-		{
-			choices.add(noteToAdd);
-		}
-		Note endNote = Line.selectRandom(choices);
-		
-		if (firstNote == null || middleNote == null || endNote == null)
-		{
-			System.err.println("something has gone wrong creating the bass line");
-			System.exit(2);
-		}
-		Note[] bassNotes = {firstNote, middleNote, endNote};
-		bassLine = new Line(minBass, maxBass, bassNotes);
+		bassLine = new Line(minBass, maxBass);
 		
 		/*altoLine = new Line();
 		*/
@@ -140,7 +43,7 @@ public class SpeciesOne implements CounterPoint {
 	public void assembleLines() {
 		System.out.println("started");
 		int index = 0;
-		while(!sopranoLine.isFinished() || !bassLine.isFinished())
+		while(!isFinished())
 		{
 			switch(index % numberOfLines)
 			{
@@ -295,7 +198,16 @@ public class SpeciesOne implements CounterPoint {
 	
 	private boolean isFinished()
 	{
-		return sopranoLine.isFinished()
+		if (sopranoLine.size() <= minLength)
+		{
+			return false;
+		}
+		int interval = sopranoLine.getNote(sopranoLine.size() - 1).intervalType(Key.getInstance().getScalarNote(0));
+		boolean upperIsTonic = interval == 1 || interval == 8;
+		interval = bassLine.getNote(bassLine.size() - 1).intervalType(Key.getInstance().getScalarNote(0));
+		boolean lowerIsTonic = interval == 1 || interval == 8;
+		return upperIsTonic && lowerIsTonic
+				&& sopranoLine.isFinished()
 				//&& altoLine.isFinished()
 				&& bassLine.isFinished();
 	}

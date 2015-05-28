@@ -12,33 +12,21 @@ public class Line {
 	private ArrayList<HashMap<Note, Integer>> possibleNotes;
 	private Stack<Integer> locationOfLastIncomplete;
 	private Stack<HashSet<Note>> requiredNext;
-	private Stack<Integer> locationOfLastSpanNote;
 	private ArrayList<Stack<HashSet<Note>>> fulfillments;
 	private ArrayList<Stack<Integer>> fulfillmentLocations;
-	private final Note finalNote;
-	private int spanLength;
 	private int minPitch;
 	private int maxPitch;
 	private static final Random rand = new Random();
 	
-	public Line(int minPitch, int maxPitch, Note[] required) {
+	public Line(int minPitch, int maxPitch) {
 		this.minPitch = minPitch;
 		this.maxPitch = maxPitch;
 		myScore = new ArrayList<Note>();
 		possibleNotes = new ArrayList<HashMap<Note, Integer>>();
 		locationOfLastIncomplete = new Stack<Integer>();
-		locationOfLastSpanNote = new Stack<Integer>();
 		fulfillments = new ArrayList<Stack<HashSet<Note>>>();
 		fulfillmentLocations = new ArrayList<Stack<Integer>>();
 		requiredNext = new Stack<HashSet<Note>>();
-		finalNote = required[required.length - 1];
-		for(int i = required.length - 1; i >= 0; i--)
-		{
-			HashSet<Note> set = new HashSet<Note>();
-			set.add(required[i]);
-			requiredNext.add(set);
-		}
-		spanLength = required.length;
 		
 		HashMap<Note,Integer> allowableNotes = new HashMap<Note,Integer>();
 		for(Note n : Key.getInstance().getSpanNotes(minPitch, maxPitch))
@@ -78,14 +66,6 @@ public class Line {
 					return n;
 				}
 			}
-			else
-			{
-				if (possibilities.contains(finalNote))
-				{
-					addNote(finalNote);
-					return finalNote;
-				}
-			}
 		}
 		// randomly selects a note to add
 		Note aNote = selectRandom(possibilities);
@@ -96,8 +76,6 @@ public class Line {
 	// does the meat of the work adding notes
 	private void addNote(Note aNote)
 	{
-		boolean isSpanNote = false;
-		
 		// if this note resolves anything, tie the things it resolves to its location
 		Stack<HashSet<Note>> fulfilled = new Stack<HashSet<Note>>();
 		Stack<Integer> fulfilledLocations = new Stack<Integer>();
@@ -112,16 +90,7 @@ public class Line {
 			{
 				if (aNote.equals(n))
 				{
-					if (requiredNext.size() <= spanLength)
-					{
-						locationOfLastSpanNote.push(size());
-						spanLength = requiredNext.size() - 1;
-						isSpanNote = true;
-					}
-					else
-					{
-						fulfilledLocations.push(locationOfLastIncomplete.pop());
-					}
+					fulfilledLocations.push(locationOfLastIncomplete.pop());
 					fulfilled.push(requiredNext.pop());
 					keepGoing = !requiredNext.isEmpty();
 				}
@@ -135,40 +104,29 @@ public class Line {
 		// 		and push its location to the location stack
 		// 		and if it is dependent on a note that precedes other resolutions,
 		// 		add those resolutions to the stack as well.
-		if (!isSpanNote)
+		HashSet<Note> resolution = getResolution(aNote);
+		if (!resolution.isEmpty())
 		{
-			HashSet<Note> resolution = getResolution(aNote);
-			if (!resolution.isEmpty())
+			int dependLocation = possibleNotes.get(possibleNotes.size() - 1).get(aNote);
+			for (int i = size() - 2; i >= dependLocation; i--)
 			{
-				int dependLocation = possibleNotes.get(possibleNotes.size() - 1).get(aNote);
-				for (int i = size() - 2; i >= dependLocation; i--)
+				Stack<Integer> currentLocations = fulfillmentLocations.get(i);
+				Stack<HashSet<Note>> currentRequirements = fulfillments.get(i);
+				for (int j = 0; j < currentLocations.size(); j++)
 				{
-					Stack<Integer> currentLocations = fulfillmentLocations.get(i);
-					Stack<HashSet<Note>> currentRequirements = fulfillments.get(i);
-					for (int j = 0; j < currentLocations.size(); j++)
+					if (currentLocations.get(j) <= dependLocation)
 					{
-						if (currentLocations.get(j) <= dependLocation)
-						{
-							locationOfLastIncomplete.push(currentLocations.remove(j));
-							requiredNext.push(currentRequirements.remove(j));
-							j--;
-						}
+						locationOfLastIncomplete.push(currentLocations.remove(j));
+						requiredNext.push(currentRequirements.remove(j));
+						j--;
 					}
 				}
-				requiredNext.push(resolution);
-				locationOfLastIncomplete.push(size() - 1);
 			}
+			requiredNext.push(resolution);
+			locationOfLastIncomplete.push(size() - 1);
 		}
-		
+			
 		setPossibilities();
-	}
-	public int loc()
-	{
-		if (locationOfLastIncomplete.isEmpty())
-		{
-			return 0;
-		}
-		return locationOfLastIncomplete.peek();
 	}
 	
 	public int depth()
@@ -296,20 +254,14 @@ public class Line {
 	
 	public boolean isFinished()
 	{
-		return !myScore.isEmpty() 
-				&& myScore.get(myScore.size() - 1).equals(finalNote)
-				&& requiredNext.isEmpty();
+		return !myScore.isEmpty() && requiredNext.isEmpty();
 	}
 	
 	private int lastBlocker()
 	{
 		if (locationOfLastIncomplete.isEmpty())
 		{
-			if (locationOfLastSpanNote.isEmpty())
-			{
-				return 0;
-			}
-			return locationOfLastSpanNote.peek();
+			return 0;
 		}
 		return locationOfLastIncomplete.peek();
 	}
@@ -354,11 +306,6 @@ public class Line {
 		
 		Note aNote = myScore.get(size() - 1);
 		
-		if (!locationOfLastSpanNote.isEmpty() && locationOfLastSpanNote.peek() >= size() - 1)
-		{
-			locationOfLastSpanNote.pop();
-			spanLength++;
-		}
 		possibleNotes.remove(possibleNotes.size() - 1);
 		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
 		if(!locationOfLastIncomplete.isEmpty() && locationOfLastIncomplete.peek() >= size() - 1)
@@ -456,11 +403,6 @@ public class Line {
 		}
 		string += "incompletes:\n";
 		for (Integer i : locationOfLastIncomplete)
-		{
-			string += i + "\n";
-		}
-		string += "spans:\n";
-		for (Integer i : locationOfLastSpanNote)
 		{
 			string += i + "\n";
 		}
