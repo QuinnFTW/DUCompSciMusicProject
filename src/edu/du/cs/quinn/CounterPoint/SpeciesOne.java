@@ -28,8 +28,8 @@ public class SpeciesOne implements CounterPoint {
 		int maxAlto = 60;
 		int minBass = 30;
 		int maxBass = 50;
-		minLength = 7;
-		maxLength = 10;
+		minLength = 5;
+		maxLength = 7;
 		
 		// creating the soprano line
 		sopranoLine = new Line(minSoprano, maxSoprano);
@@ -52,11 +52,13 @@ public class SpeciesOne implements CounterPoint {
 			case 0:
 				if (bassLine.hasNextNote() && index < maxLength * numberOfLines - 1)
 				{
+					//System.out.println("add base");
 					bassLine.addNote(false);
 					index++;
 				}
 				else
 				{
+					//System.out.println("bass invalid; remove soprano");
 					sopranoLine.removeEndNote();
 					bassLine.resetPossibilities();
 					index--;
@@ -65,6 +67,7 @@ public class SpeciesOne implements CounterPoint {
 			case 1:
 				if (altoLine.hasNextNote() && index < maxLength * numberOfLines)
 				{
+					//System.out.println("add alto");
 					altoLine.addNote(false);
 					if (isGoodBassAlto(index / numberOfLines))
 					{
@@ -72,11 +75,13 @@ public class SpeciesOne implements CounterPoint {
 					}
 					else
 					{
+						//System.out.println("oops; remove alto");
 						altoLine.removeEndNote();
 					}
 				}
 				else
 				{
+					//System.out.println("alto invalid; remove bass");
 					bassLine.removeEndNote();
 					altoLine.resetPossibilities();
 					index--;
@@ -85,6 +90,7 @@ public class SpeciesOne implements CounterPoint {
 			case 2:
 				if (sopranoLine.hasNextNote() && index < maxLength * numberOfLines)
 				{
+					//System.out.println("add soprano");
 					sopranoLine.addNote(false);
 					if (isGoodBassSoprano(index / numberOfLines)
 							&& isGoodAltoSoprano(index / numberOfLines)
@@ -94,11 +100,13 @@ public class SpeciesOne implements CounterPoint {
 					}
 					else
 					{
+						//System.out.println("oops; remove soprano");
 						sopranoLine.removeEndNote();
 					}
 				}
 				else
 				{
+					//System.out.println("soprano invalid; remove alto");
 					altoLine.removeEndNote();
 					sopranoLine.resetPossibilities();
 					index--;
@@ -160,7 +168,7 @@ public class SpeciesOne implements CounterPoint {
 		
 		// dissonance is bad, unless it is an augmented fourth or diminished fifth in the upper two lines
 		
-		if (!areConsonant || (distanceBetween % 12) != 6)
+		if (!areConsonant && (distanceBetween % 12) != 6)
 		{
 			return false;
 		}
@@ -171,13 +179,9 @@ public class SpeciesOne implements CounterPoint {
 			return false;
 		}
 		
-		// fourths are bad
-		if (intervalType == 4)
-		{
-			return false;
-		}
+		// fourths are alright in the upper two lines
 		
-		// if the bass moves by a fourth, the bass needs a dissonant contiguous note in that timespan
+		
 		if (index > 0)
 		{
 			Note previousLower = altoLine.getNote(index - 1);
@@ -231,7 +235,7 @@ public class SpeciesOne implements CounterPoint {
 	private boolean isGoodBassAlto(int index)
 	{
 		Note lowerNote = bassLine.getNote(bassLine.size() - 1);
-		Note upperNote = bassLine.getNote(altoLine.size() - 1);
+		Note upperNote = altoLine.getNote(altoLine.size() - 1);
 		int intervalType = lowerNote.intervalType(upperNote);
 		int distanceBetween = upperNote.getPitch() - lowerNote.getPitch();
 		boolean areConsonant = lowerNote.isIntervalConsonant(upperNote);
@@ -255,7 +259,6 @@ public class SpeciesOne implements CounterPoint {
 			return false;
 		}
 		
-		// if the bass moves by a fourth, the bass needs a dissonant contiguous note in that timespan
 		if (index > 0)
 		{
 			Note previousLower = bassLine.getNote(index - 1);
@@ -334,7 +337,6 @@ public class SpeciesOne implements CounterPoint {
 			return false;
 		}
 		
-		// if the bass moves by a fourth, the bass needs a dissonant contiguous note in that timespan
 		if (index > 0)
 		{
 			Note previousLower = bassLine.getNote(index - 1);

@@ -188,7 +188,7 @@ public class Line {
 				{
 					boolean hasUpper = false;
 					boolean hasLower = false;
-					for (Note n : myScore.subList(lastBlocker(), size()))
+					for (Note n : myScore.subList(lastBlocker(aNote), size()))
 					{
 						if ((!hasUpper) && n.equals(upperNeighbor))
 						{
@@ -221,11 +221,7 @@ public class Line {
 				Note lowerNeighbor = theKey.getScalarNote(degree - 1);
 				boolean hasUpper = false;
 				boolean hasLower = false;
-				if (lastBlocker() > size() - 1)
-				{
-					System.out.println(this);
-				}
-				for (Note n : myScore.subList(lastBlocker(), size() - 1))
+				for (Note n : myScore.subList(lastBlocker(aNote), size() - 1))
 				{
 					if ((!hasUpper) && n.equals(upperNeighbor))
 					{
@@ -257,13 +253,21 @@ public class Line {
 		return !myScore.isEmpty() && requiredNext.isEmpty();
 	}
 	
-	private int lastBlocker()
+	private int lastBlocker(Note aNote)
 	{
+		int dependent = 0;
+		if (aNote != null)
+		{
+			try{
+				dependent = possibleNotes.get(size()).get(aNote);
+			} catch(Exception e)
+			{}
+		}
 		if (locationOfLastIncomplete.isEmpty())
 		{
 			return 0;
 		}
-		return locationOfLastIncomplete.peek();
+		return Math.max(locationOfLastIncomplete.peek(), dependent);
 	}
 	
 	private static HashSet<Note> possibleDependents(Note aNote)
@@ -337,12 +341,12 @@ public class Line {
 		if (size() == 0)
 		{
 			HashMap<Note,Integer> allowableNotes = new HashMap<Note,Integer>();
+			possibleNotes.add(allowableNotes);
 			for(Note n : Key.getInstance().getSpanNotes(minPitch, maxPitch))
 			{
 				allowableNotes.put(n, 0);
 			}
 		}
-		
 		else
 		{
 			setPossibilities();
@@ -363,19 +367,29 @@ public class Line {
 		}
 		return null;
 	}
-	
+
+	// push the set of all possible next notes to possibilities
 	private void setPossibilities()
 	{
 		Note aNote = myScore.get(size() - 1);
-		// push the set of all possible next notes to possibilities
 		HashMap<Note,Integer> notes = new HashMap<Note,Integer>();
 		possibleNotes.add(notes);
 		
-		for (int i = size() - 1; i >= lastBlocker(); i--)
+		for(Note n : Key.getInstance().getSpanNotes(aNote.getPitch() - 12, aNote.getPitch() + 12))
+		{
+			int degreeDistance = aNote.getDegree() - n.getDegree();
+			if (n.getPitch() >= minPitch && n.getPitch() <= maxPitch
+					&& (aNote.isIntervalConsonant(n) || (degreeDistance <= 1 && degreeDistance >= -1))
+					&& n.getPitch() >= aNote.getPitch() - 12 && n.getPitch() <= aNote.getPitch() + 12)
+			{
+				notes.put(n, 0);
+			}
+		}
+		
+		for (int i = size() - 1; i > lastBlocker(aNote); i--)
 		{
 			Note currentNote = myScore.get(i);
 			HashSet<Note> possibilities = possibleDependents(currentNote);
-			possibilities.addAll(Key.getInstance().getSpanNotes(aNote.getPitch() - 12, aNote.getPitch() + 12));
 			for(Note n : possibilities)
 			{
 				int distance = aNote.getPitch() - n.getPitch();

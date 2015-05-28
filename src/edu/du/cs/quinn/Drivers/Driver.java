@@ -117,6 +117,9 @@ public class Driver {
 			break;
 		}
 		
+		System.out.println(mySopLine);
+		System.out.println(myAltLine);
+		System.out.println(myBasLine);
 		System.out.println("Your song has been created in the file 'counterpoint.midi'");
 	}
 
