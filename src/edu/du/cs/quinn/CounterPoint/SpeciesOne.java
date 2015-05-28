@@ -17,27 +17,29 @@ public class SpeciesOne implements CounterPoint {
 	private Line bassLine;
 	private int minLength;
 	private int maxLength;
-	private final int numberOfLines = 2;
+	private final int numberOfLines = 3;
 	
 	public SpeciesOne(Key myKey) {
 		this.myKey = myKey;
 		rand = new Random();
 		int minSoprano = 50;
 		int maxSoprano = 80;
+		int minAlto = 40;
+		int maxAlto = 60;
 		int minBass = 30;
 		int maxBass = 50;
-		minLength = 4;
-		maxLength = 7;
+		minLength = 7;
+		maxLength = 10;
 		
 		// creating the soprano line
 		sopranoLine = new Line(minSoprano, maxSoprano);
 
+		// creating the alto line
+		altoLine = new Line(minAlto, maxAlto);
 		
 		// creating the bass line
 		bassLine = new Line(minBass, maxBass);
 		
-		/*altoLine = new Line();
-		*/
 	}
 	
 	public void assembleLines() {
@@ -48,9 +50,9 @@ public class SpeciesOne implements CounterPoint {
 			switch(index % numberOfLines)
 			{
 			case 0:
-				if (bassLine.hasNextNote() && index < maxLength * numberOfLines)
+				if (bassLine.hasNextNote() && index < maxLength * numberOfLines - 1)
 				{
-					bassLine.addNote(true);
+					bassLine.addNote(false);
 					index++;
 				}
 				else
@@ -61,10 +63,31 @@ public class SpeciesOne implements CounterPoint {
 				}
 				break;
 			case 1:
+				if (altoLine.hasNextNote() && index < maxLength * numberOfLines)
+				{
+					altoLine.addNote(false);
+					if (isGoodBassAlto(index / numberOfLines))
+					{
+						index++;
+					}
+					else
+					{
+						altoLine.removeEndNote();
+					}
+				}
+				else
+				{
+					bassLine.removeEndNote();
+					altoLine.resetPossibilities();
+					index--;
+				}
+				break;
+			case 2:
 				if (sopranoLine.hasNextNote() && index < maxLength * numberOfLines)
 				{
-					sopranoLine.addNote(true);
-					if (isLocallyGood(index / numberOfLines))
+					sopranoLine.addNote(false);
+					if (isGoodBassSoprano(index / numberOfLines)
+							&& isGoodAltoSoprano(index / numberOfLines))
 					{
 						index++;
 					}
@@ -75,7 +98,7 @@ public class SpeciesOne implements CounterPoint {
 				}
 				else
 				{
-					bassLine.removeEndNote();
+					altoLine.removeEndNote();
 					sopranoLine.resetPossibilities();
 					index--;
 				}
@@ -83,6 +106,35 @@ public class SpeciesOne implements CounterPoint {
 			}
 		}
 		System.out.println("FINISHED");
+	}
+	
+	//checks for jumps of a fourth in the bass
+	//and if there is one and there isn't a contiguous dissonance with one of the notes as the bass, 
+	//return false
+	private boolean bassFourthCheck(int index)
+	{
+		if (index == 0)
+		{
+			return true;
+		}
+		Note bassFirst = bassLine.getNote(index - 1);
+		Note bassSecond = bassLine.getNote(index);
+
+		int bassJump = bassSecond.getDegree() - bassFirst.getDegree();
+		if (bassJump == 3 || bassJump == -3)
+		{
+			boolean firstContiguousConsonant = 
+					bassFirst.isIntervalConsonant(sopranoLine.getNote(index))
+					&& bassFirst.isIntervalConsonant(altoLine.getNote(index));
+			boolean secondContiguousConsonant =
+					bassSecond.isIntervalConsonant(sopranoLine.getNote(index - 1))
+					&& bassSecond.isIntervalConsonant(altoLine.getNote(index - 1));
+			if (firstContiguousConsonant && secondContiguousConsonant)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public Line getSopranoLine() {
@@ -97,7 +149,163 @@ public class SpeciesOne implements CounterPoint {
 		return bassLine;
 	}
 	
-	private boolean isLocallyGood(int index)
+	private boolean isGoodAltoSoprano(int index)
+	{
+		Note lowerNote = altoLine.getNote(altoLine.size() - 1);
+		Note upperNote = sopranoLine.getNote(sopranoLine.size() - 1);
+		int intervalType = lowerNote.intervalType(upperNote);
+		int distanceBetween = upperNote.getPitch() - lowerNote.getPitch();
+		boolean areConsonant = lowerNote.isIntervalConsonant(upperNote);
+		
+		// dissonance is bad, unless it is an augmented fourth or diminished fifth in the upper two lines
+		
+		if (!areConsonant && (distanceBetween % 12) != 6)
+		{
+			return false;
+		}
+		
+		// crossing is bad
+		if (distanceBetween < 0 )
+		{
+			return false;
+		}
+		
+		// fourths are bad
+		if (intervalType == 4)
+		{
+			return false;
+		}
+		
+		// if the bass moves by a fourth, the bass needs a dissonant contiguous note in that timespan
+		if (index > 0)
+		{
+			Note previousLower = altoLine.getNote(index - 1);
+			Note previousUpper = sopranoLine.getNote(index - 1);
+			
+			//similar motion to a fifth or octave is bad
+			boolean similarMotion = ( previousLower.getDegree() < lowerNote.getDegree()
+							&& previousUpper.getDegree() < upperNote.getDegree() )
+					|| ( previousLower.getDegree() > lowerNote.getDegree()
+							&& previousUpper.getDegree() > upperNote.getDegree() );
+
+			if ((intervalType == 5 || intervalType == 8 || intervalType == 1) && similarMotion)
+			{
+				return false;
+			}
+
+			// similar motion *from* unison is also bad
+			if (intervalType == 1 && 
+					( (previousUpper.getDegree() > upperNote.getDegree()
+							&& previousLower.getDegree() > lowerNote.getDegree() ) 
+						|| (previousUpper.getDegree() < upperNote.getDegree()
+								&& previousLower.getDegree() < lowerNote.getDegree())))
+			{
+				return false;
+			}
+
+			boolean lowerUpperContiguousConsonance = !previousLower.isIntervalConsonant(upperNote);
+			boolean upperLowerContiguousConsonance = !lowerNote.isIntervalConsonant(previousUpper);
+			
+			// cross relations (unequal notes of the same degree being contiguous) are bad
+			int lowerUpperContiguousInterval = previousLower.intervalType(upperNote);
+			int upperLowerContiguousInterval = lowerNote.intervalType(previousUpper);
+			if (lowerUpperContiguousInterval == 1 || lowerUpperContiguousInterval == 8)
+			{
+				if (!lowerUpperContiguousConsonance)
+				{
+					return false;
+				}
+			}
+			if (upperLowerContiguousInterval == 1 || upperLowerContiguousInterval == 8)
+			{
+				if (!upperLowerContiguousConsonance)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	private boolean isGoodBassAlto(int index)
+	{
+		Note lowerNote = bassLine.getNote(bassLine.size() - 1);
+		Note upperNote = bassLine.getNote(altoLine.size() - 1);
+		int intervalType = lowerNote.intervalType(upperNote);
+		int distanceBetween = upperNote.getPitch() - lowerNote.getPitch();
+		boolean areConsonant = lowerNote.isIntervalConsonant(upperNote);
+		
+		// dissonance is bad
+		
+		if (!areConsonant)
+		{
+			return false;
+		}
+		
+		// crossing is bad
+		if (distanceBetween < 0 )
+		{
+			return false;
+		}
+		
+		// fourths are bad
+		if (intervalType == 4)
+		{
+			return false;
+		}
+		
+		// if the bass moves by a fourth, the bass needs a dissonant contiguous note in that timespan
+		if (index > 0)
+		{
+			Note previousLower = bassLine.getNote(index - 1);
+			Note previousUpper = altoLine.getNote(index - 1);
+			
+			//similar motion to a fifth or octave is bad
+			boolean similarMotion = ( previousLower.getDegree() < lowerNote.getDegree()
+							&& previousUpper.getDegree() < upperNote.getDegree() )
+					|| ( previousLower.getDegree() > lowerNote.getDegree()
+							&& previousUpper.getDegree() > upperNote.getDegree() );
+
+			if ((intervalType == 5 || intervalType == 8 || intervalType == 1) && similarMotion)
+			{
+				return false;
+			}
+
+			// similar motion *from* unison is also bad
+			if (intervalType == 1 && 
+					( (previousUpper.getDegree() > upperNote.getDegree()
+							&& previousLower.getDegree() > lowerNote.getDegree() ) 
+						|| (previousUpper.getDegree() < upperNote.getDegree()
+								&& previousLower.getDegree() < lowerNote.getDegree())))
+			{
+				return false;
+			}
+
+			boolean lowerUpperContiguousConsonance = !previousLower.isIntervalConsonant(upperNote);
+			boolean upperLowerContiguousConsonance = !lowerNote.isIntervalConsonant(previousUpper);
+			
+			// cross relations (unequal notes of the same degree being contiguous) are bad
+			int lowerUpperContiguousInterval = previousLower.intervalType(upperNote);
+			int upperLowerContiguousInterval = lowerNote.intervalType(previousUpper);
+			if (lowerUpperContiguousInterval == 1 || lowerUpperContiguousInterval == 8)
+			{
+				if (!lowerUpperContiguousConsonance)
+				{
+					return false;
+				}
+			}
+			if (upperLowerContiguousInterval == 1 || upperLowerContiguousInterval == 8)
+			{
+				if (!upperLowerContiguousConsonance)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	private boolean isGoodBassSoprano(int index)
 	{
 		// first check for bass & soprano
 		Note lowerNote = bassLine.getNote(index);
@@ -131,25 +339,15 @@ public class SpeciesOne implements CounterPoint {
 			Note previousLower = bassLine.getNote(index - 1);
 			Note previousUpper = sopranoLine.getNote(index - 1);
 			
+			//similar motion to a fifth or octave is bad
 			boolean similarMotion = ( previousLower.getDegree() < lowerNote.getDegree()
 							&& previousUpper.getDegree() < upperNote.getDegree() )
 					|| ( previousLower.getDegree() > lowerNote.getDegree()
 							&& previousUpper.getDegree() > upperNote.getDegree() );
 
-			if (intervalType == 5 || intervalType == 8 || intervalType == 1)
+			if ((intervalType == 5 || intervalType == 8 || intervalType == 1) && similarMotion)
 			{
-				// parallel fifths or octaves is bad
-				int earlierDistanceBetween = previousUpper.getPitch() - previousLower.getPitch();
-				if (earlierDistanceBetween == distanceBetween)
-				{
-					return false;
-				}
-
-				// unless it is the last note, similar motion to a fifth or octave is bad
-				if (similarMotion && !isFinished())
-				{
-					return false;
-				}
+				return false;
 			}
 
 			// similar motion *from* unison is also bad
@@ -208,7 +406,7 @@ public class SpeciesOne implements CounterPoint {
 		boolean lowerIsTonic = interval == 1 || interval == 8;
 		return upperIsTonic && lowerIsTonic
 				&& sopranoLine.isFinished()
-				//&& altoLine.isFinished()
+				&& altoLine.isFinished()
 				&& bassLine.isFinished();
 	}
 

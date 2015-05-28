@@ -334,7 +334,19 @@ public class Line {
 	public void resetPossibilities()
 	{
 		possibleNotes.remove(possibleNotes.size() - 1);
-		setPossibilities();
+		if (size() == 0)
+		{
+			HashMap<Note,Integer> allowableNotes = new HashMap<Note,Integer>();
+			for(Note n : Key.getInstance().getSpanNotes(minPitch, maxPitch))
+			{
+				allowableNotes.put(n, 0);
+			}
+		}
+		
+		else
+		{
+			setPossibilities();
+		}
 	}
 	
 	public static Note selectRandom(Set<Note> set)
