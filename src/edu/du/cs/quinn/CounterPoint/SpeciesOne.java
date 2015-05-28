@@ -15,6 +15,8 @@ public class SpeciesOne implements CounterPoint {
 	private Line sopranoLine;
 	private Line altoLine;
 	private Line bassLine;
+	private int maxLength;
+	private final int numberOfLines = 2;
 	
 	public SpeciesOne(Key myKey) {
 		this.myKey = myKey;
@@ -23,6 +25,7 @@ public class SpeciesOne implements CounterPoint {
 		int maxSoprano = 80;
 		int minBass = 30;
 		int maxBass = 50;
+		maxLength = 6;
 		
 		// creating the soprano line
 		HashSet<Note> spanNotes = myKey.getSpanNotes(minSoprano, maxSoprano);
@@ -136,19 +139,44 @@ public class SpeciesOne implements CounterPoint {
 	
 	public void assembleLines() {
 		System.out.println("started");
-		for (int i = 0; i < 7; i++)
+		int index = 0;
+		while(!sopranoLine.isFinished() || !bassLine.isFinished())
 		{
-			sopranoLine.addNote(true);
-		}
-		while(!sopranoLine.isFinished())
-		{
-			if (sopranoLine.hasNextNote() && sopranoLine.size() < 10)
+			switch(index % numberOfLines)
 			{
-				sopranoLine.addNote(true);
-			}
-			else
-			{
-				sopranoLine.removeEndNote();
+			case 0:
+				if (bassLine.hasNextNote() && index < maxLength * numberOfLines)
+				{
+					bassLine.addNote(true);
+					index++;
+				}
+				else
+				{
+					sopranoLine.removeEndNote();
+					bassLine.resetPossibilities();
+					index--;
+				}
+				break;
+			case 1:
+				if (sopranoLine.hasNextNote() && index < maxLength * numberOfLines)
+				{
+					sopranoLine.addNote(true);
+					if (isLocallyGood(index / numberOfLines))
+					{
+						index++;
+					}
+					else
+					{
+						sopranoLine.removeEndNote();
+					}
+				}
+				else
+				{
+					bassLine.removeEndNote();
+					sopranoLine.resetPossibilities();
+					index--;
+				}
+				break;
 			}
 		}
 		System.out.println("FINISHED");
@@ -267,7 +295,9 @@ public class SpeciesOne implements CounterPoint {
 	
 	private boolean isFinished()
 	{
-		return sopranoLine.isFinished() && altoLine.isFinished() && bassLine.isFinished();
+		return sopranoLine.isFinished()
+				//&& altoLine.isFinished()
+				&& bassLine.isFinished();
 	}
 
 }

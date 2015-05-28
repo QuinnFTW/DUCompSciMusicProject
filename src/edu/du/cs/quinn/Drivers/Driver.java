@@ -80,7 +80,7 @@ public class Driver {
 			counterOne.assembleLines();
 			mySopLine = counterOne.getSopranoLine();
 			//myAltLine = counterTwo.getAltoLine();
-			//myBasLine = counterOne.getBassLine();
+			myBasLine = counterOne.getBassLine();
 			interpreter = new LineInterpreter(mySopLine,myAltLine,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
@@ -90,7 +90,7 @@ public class Driver {
 			counterTwo.assembleLines();
 			mySopLine = counterTwo.getSopranoLine();
 			//myAltLine = counterTwo.getAltoLine();
-			//myBasLine = counterTwo.getBassLine();
+			myBasLine = counterTwo.getBassLine();
 			interpreter = new LineInterpreter(mySopLine,myAltLine,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
@@ -100,7 +100,7 @@ public class Driver {
 			counterThree.assembleLines();
 			mySopLine = counterThree.getSopranoLine();
 			//myAltLine = counterThree.getAltoLine();
-			//myBasLine = counterThree.getBassLine();
+			myBasLine = counterThree.getBassLine();
 			interpreter = new LineInterpreter(mySopLine,myAltLine,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();
@@ -110,7 +110,7 @@ public class Driver {
 			counterFour.assembleLines();
 			mySopLine = counterFour.getSopranoLine();
 			//myAltLine = counterFour.getAltoLine();
-			//myBasLine = counterFour.getBassLine();
+			myBasLine = counterFour.getBassLine();
 			interpreter = new LineInterpreter(mySopLine,myAltLine,myBasLine,"counterpoint.midi");
 			interpreter.readLinesToMidi();
 			interpreter.outputToMidi();

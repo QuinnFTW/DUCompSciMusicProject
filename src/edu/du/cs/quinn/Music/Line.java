@@ -48,17 +48,16 @@ public class Line {
 		possibleNotes.add(allowableNotes);
 	}
 	
-	public Note addNote(boolean shouldExtend) {
+	public Note addNote(boolean tryToFinish) {
 		
 		Set<Note> possibilities = possibleNotes.get(possibleNotes.size() - 1).keySet();
 		if(possibilities.isEmpty())
 		{
-			System.out.println(this);
 			System.err.println("Error: could not add a note");
 			System.exit(1);
 		}
 		
-		if (!shouldExtend)
+		if (tryToFinish)
 		{
 			// check to see if it is possible to resolve the latest dependent note
 			if (!requiredNext.isEmpty())
@@ -73,7 +72,6 @@ public class Line {
 				}
 				if (!possibleCompletions.isEmpty())
 				{
-					System.out.println("I found a match!");
 					// if so, adds a randomly selected resolution
 					Note n = selectRandom(possibleCompletions);
 					addNote(n);
@@ -149,7 +147,7 @@ public class Line {
 					Stack<HashSet<Note>> currentRequirements = fulfillments.get(i);
 					for (int j = 0; j < currentLocations.size(); j++)
 					{
-						if (currentLocations.get(j) < dependLocation)
+						if (currentLocations.get(j) <= dependLocation)
 						{
 							locationOfLastIncomplete.push(currentLocations.remove(j));
 							requiredNext.push(currentRequirements.remove(j));
@@ -351,13 +349,16 @@ public class Line {
 		if (size() == 0)
 		{
 			System.err.println("Could not remove another note. It probably became impossible to finish");
+			System.exit(3);
 		}
+		
+		Note aNote = myScore.get(size() - 1);
+		
 		if (!locationOfLastSpanNote.isEmpty() && locationOfLastSpanNote.peek() >= size() - 1)
 		{
 			locationOfLastSpanNote.pop();
 			spanLength++;
 		}
-		Note aNote = myScore.get(size() - 1);
 		possibleNotes.remove(possibleNotes.size() - 1);
 		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
 		if(!locationOfLastIncomplete.isEmpty() && locationOfLastIncomplete.peek() >= size() - 1)
@@ -463,6 +464,7 @@ public class Line {
 		{
 			string += i + "\n";
 		}
+		string += "numberRequired:\n" + requiredNext.size() + "\n";
 		return string;
 	}
 
