@@ -87,7 +87,8 @@ public class SpeciesOne implements CounterPoint {
 				{
 					sopranoLine.addNote(false);
 					if (isGoodBassSoprano(index / numberOfLines)
-							&& isGoodAltoSoprano(index / numberOfLines))
+							&& isGoodAltoSoprano(index / numberOfLines)
+							&& bassFourthCheck(index / numberOfLines))
 					{
 						index++;
 					}
@@ -159,7 +160,7 @@ public class SpeciesOne implements CounterPoint {
 		
 		// dissonance is bad, unless it is an augmented fourth or diminished fifth in the upper two lines
 		
-		if (!areConsonant && (distanceBetween % 12) != 6)
+		if (!areConsonant || (distanceBetween % 12) != 6)
 		{
 			return false;
 		}
