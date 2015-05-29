@@ -19,6 +19,7 @@ public class Driver {
 		SpeciesTwo counterTwo;
 		SpeciesThree counterThree;
 		SpeciesFour counterFour;
+		Key myKey;
 		HashMap<String,Integer> keyMap = new HashMap<String, Integer>();
 		
 		for(int i=-2;i<9;i++) {
@@ -26,39 +27,51 @@ public class Driver {
 				switch(n) {
 				case 0:
 					keyMap.put("C"+i, n+(i*12));
+					keyMap.put("c"+i, n+(i*12));
 					break;
 				case 1:
 					keyMap.put("C#"+i, n+(i*12));
+					keyMap.put("c#"+i, n+(i*12));
 					break;
 				case 2:
 					keyMap.put("D"+i, n+(i*12));
+					keyMap.put("d"+i, n+(i*12));
 					break;
 				case 3:
 					keyMap.put("D#"+i, n+(i*12));
+					keyMap.put("d#"+i, n+(i*12));
 					break;
 				case 4:
 					keyMap.put("E"+i, n+(i*12));
+					keyMap.put("e"+i, n+(i*12));
 					break;
 				case 5:
 					keyMap.put("F"+i, n+(i*12));
+					keyMap.put("f"+i, n+(i*12));
 					break;
 				case 6:
 					keyMap.put("F#"+i, n+(i*12));
+					keyMap.put("f#"+i, n+(i*12));
 					break;
 				case 7:
 					keyMap.put("G"+i, n+(i*12));
+					keyMap.put("g"+i, n+(i*12));
 					break;
 				case 8:
 					keyMap.put("G#"+i, n+(i*12));
+					keyMap.put("g#"+i, n+(i*12));
 					break;
 				case 9:
 					keyMap.put("A"+i, n+(i*12));
+					keyMap.put("a"+i, n+(i*12));
 					break;
 				case 10:
 					keyMap.put("A#"+i, n+(i*12));
+					keyMap.put("a#"+i, n+(i*12));
 					break;
 				case 11:
 					keyMap.put("B"+i, n+(i*12));
+					keyMap.put("b"+i, n+(i*12));
 					break;
 				}
 			}
@@ -66,10 +79,16 @@ public class Driver {
 		
 		System.out.println("What key will this song be in?: ");
 		System.out.println("(e.g. A for A major, a for A minor, A# for A sharp major, a# for A sharp minor.)");
-		System.out.println("(Also include the number for the octive e.g. C0 for the normal octive)");
 		command = scanIn.nextLine();
+		String copyOfCommand = command.toUpperCase();
 		
-		Key myKey = Key.getInstance(60, false);
+		if(command.equals(copyOfCommand)) {
+			myKey = Key.getInstance(keyMap.get(command), true);
+		}
+		else {
+			myKey = Key.getInstance(keyMap.get(command), false);
+		}
+		
 		
 		System.out.print("Which counterpoint are you running?(1,2,3,4): ");
 		command = scanIn.nextLine();
