@@ -1,3 +1,10 @@
+/**
+ * 
+ * 
+ * @author Griffin Good
+ * @date 5/30/15
+ */
+
 package edu.du.cs.quinn.CounterPoint;
 
 import java.util.ArrayList;

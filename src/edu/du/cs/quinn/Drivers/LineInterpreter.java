@@ -1,14 +1,17 @@
+/**
+ * This class takes up to three lines and creates a MIDI file in the
+ * main directory of the project.
+ * 
+ * @author Quinn Hannah-White
+ * @date 5/30/15
+ */
+
 package edu.du.cs.quinn.Drivers;
 
 import java.io.File;
 import java.io.IOException;
-
-import edu.du.cs.quinn.Music.Line;
-
+import edu.du.cs.quinn.Music.*;
 import javax.sound.midi.*;
-
-import edu.du.cs.quinn.Music.Line;
-import javax.sound.*;
 
 public class LineInterpreter {
 	private Line sopranoLine;

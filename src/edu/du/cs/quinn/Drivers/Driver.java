@@ -1,3 +1,12 @@
+/**
+ * This is the main Driver class for the entire Music Project.
+ * It takes in all user input from the Eclipse console and implements
+ * all of the utility classes.
+ * 
+ * @author Quinn Hannah-White
+ * @date 5/30/15
+ */
+
 package edu.du.cs.quinn.Drivers;
 
 import java.util.*;

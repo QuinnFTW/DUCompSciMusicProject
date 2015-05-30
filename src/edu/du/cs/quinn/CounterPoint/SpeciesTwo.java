@@ -1,3 +1,11 @@
+/**
+ * Currently an unused class. In future, would contain the logic
+ * for Second species counterpoint.
+ * 
+ * @author Quinn Hannah-White
+ * @date 5/30/15
+ */
+
 package edu.du.cs.quinn.CounterPoint;
 
 import java.util.ArrayList;

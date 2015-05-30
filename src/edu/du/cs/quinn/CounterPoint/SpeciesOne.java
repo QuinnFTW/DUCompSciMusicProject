@@ -1,16 +1,21 @@
+/**
+ * 
+ * 
+ * @author Griffin Good
+ * @date 5/30/15
+ */
+
 package edu.du.cs.quinn.CounterPoint;
 
 import edu.du.cs.quinn.Music.*;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.Stack;
-import java.util.HashSet;
+
 
 public class SpeciesOne implements CounterPoint {
-	private Note myNote;
+	@SuppressWarnings("unused")
 	private Key myKey;
+	@SuppressWarnings("unused")
 	private Random rand;
 	private Line sopranoLine;
 	private Line altoLine;
