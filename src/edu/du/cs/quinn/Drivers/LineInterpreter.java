@@ -22,7 +22,14 @@ public class LineInterpreter {
 	private Track track;
 	private static final int VELOCITY = 64;
 	
-
+	/**
+	 * Basic constructor
+	 * 
+	 * @param lineOne Soprano Line
+	 * @param lineTwo Alto Line
+	 * @param lineThree Bass Line
+	 * @param fileName Constant counterpoint.midi
+	 */
 	public LineInterpreter(Line lineOne, Line lineTwo, Line lineThree, String fileName) {
 		sopranoLine = lineOne;
 		altoLine = lineTwo;
@@ -38,6 +45,10 @@ public class LineInterpreter {
 		track = sequence.createTrack();
 	}
 
+	/**
+	 * Rather simple, uses the createNoteOn and Off functions
+	 * to add the individual notes to the MIDI file.
+	 */
 	public void readLinesToMidi() {
 		if(sopranoLine!=null){
 			for(int i=0;i<sopranoLine.size();i++) {
@@ -59,6 +70,9 @@ public class LineInterpreter {
 		}
 	}
 	
+	/**
+	 * Creates the MIDI file, with the Java sound API
+	 */
 	public void outputToMidi() {
 		try {
 			MidiSystem.write(sequence, 0, outputFile);
@@ -69,14 +83,37 @@ public class LineInterpreter {
 		}
 	}
 	
+	/**
+	 * Turns a note "ON" for the MIDI sequence
+	 * 
+	 * @param nKey The pitch of the note being added
+	 * @param lTick The duration of the note
+	 * @return Final Note event
+	 */
 	private static MidiEvent createNoteOnEvent(int nKey, long lTick) {
 		return createNoteEvent(ShortMessage.NOTE_ON, nKey, VELOCITY, lTick);
 	}
 	
+	/**
+	 * Turns a note "OFF" for the MIDI sequence
+	 * 
+	 * @param nKey The pitch of the note being added
+	 * @param lTick The duration of the note
+	 * @return Final Note event
+	 */
 	private static MidiEvent createNoteOffEvent(int nKey, long lTick) {
 		return createNoteEvent(ShortMessage.NOTE_OFF, nKey, 0, lTick);
 	}
 	
+	/**
+	 * Adds the note event to the MIDI sequence
+	 * 
+	 * @param nCommand ON or OFF
+	 * @param nKey The pitch of the note being added or stopped
+	 * @param nVelocity 
+	 * @param lTick The duration of the note
+	 * @return The event added to the MIDI sequence
+	 */
 	private static MidiEvent createNoteEvent(int nCommand, int nKey, int nVelocity, long lTick) {
 		ShortMessage message = new ShortMessage();
 		try {

@@ -31,6 +31,9 @@ public class Driver {
 		Key myKey;
 		HashMap<String,Integer> keyMap = new HashMap<String, Integer>();
 		
+		/**
+		 * Creates the HashMap for creating the Key
+		 */
 		for(int i=-2;i<9;i++) {
 			for(int n=0;n<12;n++) {
 				switch(n) {
@@ -98,10 +101,12 @@ public class Driver {
 			myKey = Key.getInstance(keyMap.get(command), false);
 		}
 		
-		
 		System.out.print("Which counterpoint are you running?(1,2,3,4): ");
 		command = scanIn.nextLine();
 		
+		/**
+		 * Calls the necessary functions for creating the counterpoint composition
+		 */
 		switch(command) {
 		case "1":
 			counterOne = new SpeciesOne(myKey);
