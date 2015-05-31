@@ -100,6 +100,7 @@ public class Line {
 					fulfilledLocations.push(locationOfLastIncomplete.pop());
 					fulfilled.push(requiredNext.pop());
 					keepGoing = !requiredNext.isEmpty();
+					break;
 				}
 			}
 		}
@@ -167,7 +168,7 @@ public class Line {
 			case 6:
 				if (theKey.isMajor())
 				{
-					for(Note n : myScore.subList(locationOfLastIncomplete.peek(), size()))
+					for(Note n : myScore.subList(lastBlocker(aNote), size()))
 					{
 						if (n.equals(lowerNeighbor))
 						{
@@ -181,7 +182,7 @@ public class Line {
 			case 7:
 				if (theKey.isMajor())
 				{
-					for (Note n : myScore.subList(locationOfLastIncomplete.peek(), size()))
+					for (Note n : myScore.subList(lastBlocker(aNote), size()))
 					{
 						if (n.equals(upperNeighbor))
 						{

@@ -204,11 +204,7 @@ public class SpeciesOne implements CounterPoint {
 			}
 
 			// similar motion *from* unison is also bad
-			if (intervalType == 1 && 
-					( (previousUpper.getDegree() > upperNote.getDegree()
-							&& previousLower.getDegree() > lowerNote.getDegree() ) 
-						|| (previousUpper.getDegree() < upperNote.getDegree()
-								&& previousLower.getDegree() < lowerNote.getDegree())))
+			if (previousLower.intervalType(previousUpper) == 1 && similarMotion)
 			{
 				return false;
 			}
@@ -281,11 +277,7 @@ public class SpeciesOne implements CounterPoint {
 			}
 
 			// similar motion *from* unison is also bad
-			if (intervalType == 1 && 
-					( (previousUpper.getDegree() > upperNote.getDegree()
-							&& previousLower.getDegree() > lowerNote.getDegree() ) 
-						|| (previousUpper.getDegree() < upperNote.getDegree()
-								&& previousLower.getDegree() < lowerNote.getDegree())))
+			if (previousLower.intervalType(previousUpper) == 1 && similarMotion)
 			{
 				return false;
 			}
@@ -359,11 +351,7 @@ public class SpeciesOne implements CounterPoint {
 			}
 
 			// similar motion *from* unison is also bad
-			if (intervalType == 1 && 
-					( (previousUpper.getDegree() > upperNote.getDegree()
-							&& previousLower.getDegree() > lowerNote.getDegree() ) 
-						|| (previousUpper.getDegree() < upperNote.getDegree()
-								&& previousLower.getDegree() < lowerNote.getDegree())))
+			if (previousLower.intervalType(previousUpper) == 1 && similarMotion)
 			{
 				return false;
 			}
