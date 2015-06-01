@@ -34,7 +34,7 @@ public class SpeciesOne implements CounterPoint {
 		int minBass = 30;
 		int maxBass = 50;
 		minLength = 5;
-		maxLength = 7;
+		maxLength = 10;
 		
 		// creating the soprano line
 		sopranoLine = new Line(minSoprano, maxSoprano);
@@ -50,6 +50,7 @@ public class SpeciesOne implements CounterPoint {
 	public void assembleLines() {
 		System.out.println("started");
 		int index = 0;
+		boolean tryToFinish = false;
 		while(!isFinished())
 		{
 			switch(index % numberOfLines)
@@ -58,7 +59,8 @@ public class SpeciesOne implements CounterPoint {
 				if (bassLine.hasNextNote() && index < maxLength * numberOfLines - 2)
 				{
 					//System.out.println("add base");
-					bassLine.addNote(false);
+					tryToFinish = bassLine.depth() >= maxLength;
+					bassLine.addNote(tryToFinish);
 					index++;
 				}
 				else
@@ -73,7 +75,8 @@ public class SpeciesOne implements CounterPoint {
 				if (altoLine.hasNextNote() && index < maxLength * numberOfLines)
 				{
 					//System.out.println("add alto");
-					altoLine.addNote(false);
+					tryToFinish = altoLine.depth() >= maxLength;
+					altoLine.addNote(tryToFinish);
 					if (isGoodBassAlto(index / numberOfLines))
 					{
 						index++;
@@ -96,7 +99,8 @@ public class SpeciesOne implements CounterPoint {
 				if (sopranoLine.hasNextNote() && index < maxLength * numberOfLines)
 				{
 					//System.out.println("add soprano");
-					sopranoLine.addNote(false);
+					tryToFinish = sopranoLine.depth() >= maxLength;
+					sopranoLine.addNote(tryToFinish);
 					if (isGoodBassSoprano(index / numberOfLines)
 							&& isGoodAltoSoprano(index / numberOfLines)
 							&& bassFourthCheck(index / numberOfLines))
@@ -105,13 +109,11 @@ public class SpeciesOne implements CounterPoint {
 					}
 					else
 					{
-						//System.out.println("oops; remove soprano");
 						sopranoLine.removeEndNote();
 					}
 				}
 				else
 				{
-					//System.out.println("soprano invalid; remove alto");
 					altoLine.removeEndNote();
 					sopranoLine.resetPossibilities();
 					index--;

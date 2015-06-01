@@ -120,13 +120,12 @@ public class Line {
 			{
 				Stack<Integer> currentLocations = fulfillmentLocations.get(i);
 				Stack<HashSet<Note>> currentRequirements = fulfillments.get(i);
-				for (int j = 0; j < currentLocations.size(); j++)
+				for (int j = currentLocations.size() - 1; j >= 0 && !currentLocations.empty(); j--)
 				{
 					if (currentLocations.get(j) <= dependLocation)
 					{
 						locationOfLastIncomplete.push(currentLocations.remove(j));
 						requiredNext.push(currentRequirements.remove(j));
-						j--;
 					}
 				}
 			}
@@ -318,8 +317,6 @@ public class Line {
 		
 		Note aNote = myScore.get(size() - 1);
 		
-		possibleNotes.remove(possibleNotes.size() - 1);
-		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
 		if(!locationOfLastIncomplete.isEmpty() && locationOfLastIncomplete.peek() >= size() - 1)
 		{
 			locationOfLastIncomplete.pop();
@@ -335,6 +332,10 @@ public class Line {
 		{
 			locationOfLastIncomplete.push(l.pop());
 		}
+		fulfillments.remove(fulfillments.size() - 1);
+		fulfillmentLocations.remove(fulfillmentLocations.size() - 1);
+		possibleNotes.remove(possibleNotes.size() - 1);
+		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
 		myScore.remove(size() - 1);
 	}
 	
