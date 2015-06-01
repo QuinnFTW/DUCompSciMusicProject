@@ -1,7 +1,8 @@
 /**
+ * Currently an unused class. In future, would contain the logic
+ * for Fourth species counterpoint.
  * 
- * 
- * @author Griffin Good
+ * @author Quinn Hannah-White
  * @date 5/30/15
  */
 

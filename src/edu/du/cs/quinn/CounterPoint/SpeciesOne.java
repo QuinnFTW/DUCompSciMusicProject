@@ -1,5 +1,6 @@
 /**
- * 
+ * Includes the functions and logic of the first
+ * species of counterpoint.
  * 
  * @author Griffin Good
  * @date 5/30/15
@@ -8,9 +9,7 @@
 package edu.du.cs.quinn.CounterPoint;
 
 import edu.du.cs.quinn.Music.*;
-
 import java.util.Random;
-
 
 public class SpeciesOne implements CounterPoint {
 	@SuppressWarnings("unused")
@@ -24,6 +23,11 @@ public class SpeciesOne implements CounterPoint {
 	private int maxLength;
 	private final int numberOfLines = 3;
 	
+	/**
+	 * Basic constructor for the first species
+	 * 
+	 * @param myKey The key for the composition
+	 */
 	public SpeciesOne(Key myKey) {
 		this.myKey = myKey;
 		rand = new Random();
@@ -47,6 +51,9 @@ public class SpeciesOne implements CounterPoint {
 		
 	}
 	
+	/**
+	 * Creates the lines of the composition.
+	 */
 	public void assembleLines() {
 		System.out.println("started");
 		int index = 0;
@@ -153,14 +160,23 @@ public class SpeciesOne implements CounterPoint {
 		return true;
 	}
 
+	/**
+	 * Returns the soprano line.
+	 */
 	public Line getSopranoLine() {
 		return sopranoLine;
 	}
 
+	/**
+	 * Returns the alto line.
+	 */
 	public Line getAltoLine() {
 		return altoLine;
 	}
 
+	/**
+	 * Returns the bass line.
+	 */
 	public Line getBassLine() {
 		return bassLine;
 	}
