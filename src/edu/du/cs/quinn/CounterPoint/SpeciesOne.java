@@ -34,7 +34,7 @@ public class SpeciesOne implements CounterPoint {
 		int minBass = 30;
 		int maxBass = 50;
 		minLength = 5;
-		maxLength = 10;
+		maxLength = 7;
 		
 		// creating the soprano line
 		sopranoLine = new Line(minSoprano, maxSoprano);
@@ -59,7 +59,7 @@ public class SpeciesOne implements CounterPoint {
 				if (bassLine.hasNextNote() && index < maxLength * numberOfLines - 2)
 				{
 					//System.out.println("add base");
-					tryToFinish = bassLine.depth() >= maxLength;
+					tryToFinish = bassLine.depth() >= (maxLength - index) / 3;
 					bassLine.addNote(tryToFinish);
 					index++;
 				}
@@ -75,7 +75,7 @@ public class SpeciesOne implements CounterPoint {
 				if (altoLine.hasNextNote() && index < maxLength * numberOfLines)
 				{
 					//System.out.println("add alto");
-					tryToFinish = altoLine.depth() >= maxLength;
+					tryToFinish = altoLine.depth() >= (maxLength - index) / 3;
 					altoLine.addNote(tryToFinish);
 					if (isGoodBassAlto(index / numberOfLines))
 					{
@@ -99,7 +99,7 @@ public class SpeciesOne implements CounterPoint {
 				if (sopranoLine.hasNextNote() && index < maxLength * numberOfLines)
 				{
 					//System.out.println("add soprano");
-					tryToFinish = sopranoLine.depth() >= maxLength;
+					tryToFinish = sopranoLine.depth() >= (maxLength - index) / 3;
 					sopranoLine.addNote(tryToFinish);
 					if (isGoodBassSoprano(index / numberOfLines)
 							&& isGoodAltoSoprano(index / numberOfLines)

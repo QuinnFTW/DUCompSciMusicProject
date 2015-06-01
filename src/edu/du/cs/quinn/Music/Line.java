@@ -274,7 +274,7 @@ public class Line {
 		{
 			return 0;
 		}
-		return Math.max(locationOfLastIncomplete.peek(), dependent);
+		return Math.min(Math.max(locationOfLastIncomplete.peek(), dependent), size() - 1);
 	}
 	
 	private static HashSet<Note> possibleDependents(Note aNote)
