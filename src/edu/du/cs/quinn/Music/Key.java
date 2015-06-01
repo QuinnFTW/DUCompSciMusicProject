@@ -1,5 +1,7 @@
 /**
- * 
+ * This is a singleton class that determines the key
+ * for which the the counterpoint composition will be
+ * created.
  * 
  * @author Griffin Good
  * @date 5/30/15
@@ -24,11 +26,26 @@ public class Key {
 		centerTonic = new Note(thePitch, 0);
 	}
 	
+	/**
+	 * Returns the one and only instance of the
+	 * Key class.
+	 * 
+	 * @return instance The only instance of the Key class
+	 */
 	public static Key getInstance()
 	{
 		return instance;
 	}
 	
+	/**
+	 * Checks if there is already an instance of the
+	 * Key class. If no, it creates one, if yes, it does
+	 * not.
+	 * 
+	 * @param p The pitch for the key
+	 * @param isMajor If the key is major or minor
+	 * @return instance The only instance of the Key class
+	 */
 	public static Key getInstance(int p, boolean isMajor) {
 	   if(instance == null) {
 	      instance = new Key(p, isMajor);
@@ -36,11 +53,24 @@ public class Key {
 	   return instance;
 	}
 
+	/**
+	 * Returns the scaler notes based off of the key and
+	 * the specified degree.
+	 * 
+	 * @param degree The degree of change
+	 * @return Note The scalar notes of the specified degree
+	 */
 	public Note getScalarNote(int degree)
 	{
 		return new Note(getScalePitch(degree), degree);
 	}
 	
+	/**
+	 * Helper class for getScalarNotes
+	 * 
+	 * @param degree The same degree for getScalarNotes
+	 * @return int Difference from starting note to Scaler note
+	 */
 	public int getScalePitch(int degree)
 	{
 		int remainder = degree % 7;
@@ -54,6 +84,13 @@ public class Key {
 		return pitchClass + (octave * 12);
 	}
 	
+	/**
+	 * Returns all the helper notes for the given pitch
+	 * 
+	 * @param minPitch Minimum pitch
+	 * @param maxPitch Maximum pitch
+	 * @return All of the helper notes
+	 */
 	public HashSet<Note> getSpanNotes(int minPitch, int maxPitch)
 	{
 		HashSet<Note> span = new HashSet<Note>();
@@ -83,11 +120,19 @@ public class Key {
 		return span;
 	}
 	
+	/**
+	 * Returns the centerTonic for the key
+	 * 
+	 * @return centerTonic
+	 */
 	public Note getTonic()
 	{
 		return centerTonic;
 	}
 	
+	/**
+	 * Initialization of all the scale pitches for the key
+	 */
 	private void setScalePitches()
 	{
 		scalePitches[0] = thePitch;
@@ -108,6 +153,11 @@ public class Key {
 		}
 	}
 	
+	/**
+	 * Tells if the key is major or minor
+	 * 
+	 * @return isMajor
+	 */
 	public boolean isMajor()
 	{
 		return isMajor;
