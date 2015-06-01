@@ -37,7 +37,7 @@ public class SpeciesOne implements CounterPoint {
 		int maxAlto = 60;
 		int minBass = 30;
 		int maxBass = 50;
-		minLength = 7;
+		minLength = 5;
 		maxLength = 9;
 		
 		// creating the soprano line

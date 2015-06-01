@@ -133,7 +133,7 @@ public class Line {
 			{
 				Stack<Integer> currentLocations = fulfillmentLocations.get(i);
 				Stack<HashSet<Note>> currentRequirements = fulfillments.get(i);
-				for (int j = currentLocations.size() - 1; j >= 0 && !currentLocations.empty(); j--)
+				for (int j = currentLocations.size() - 1; j >= 0; j--)
 				{
 					if (currentLocations.get(j) <= dependLocation)
 					{
@@ -172,6 +172,11 @@ public class Line {
 		int pitch = aNote.getPitch();
 		int expectedPitch = theKey.getScalePitch(degree);
 		int typeOfNote = theKey.getTonic().intervalType(aNote);
+		if (lastBlocker(aNote) > size())
+		{
+			System.out.println(this);
+			System.err.println("fatal fucking error");
+		}
 		if (pitch == expectedPitch)
 		{
 			Note lowerNeighbor = theKey.getScalarNote(degree - 1);
@@ -247,7 +252,7 @@ public class Line {
 				Note lowerNeighbor = theKey.getScalarNote(degree - 1);
 				boolean hasUpper = false;
 				boolean hasLower = false;
-				for (Note n : myScore.subList(lastBlocker(aNote), size() - 1))
+				for (Note n : myScore.subList(lastBlocker(aNote), size()))
 				{
 					if ((!hasUpper) && n.equals(upperNeighbor))
 					{
@@ -303,7 +308,7 @@ public class Line {
 		{
 			return 0;
 		}
-		return Math.min(Math.max(locationOfLastIncomplete.peek(), dependent), size() - 1);
+		return Math.max(locationOfLastIncomplete.peek(), dependent);
 	}
 	
 	private static HashSet<Note> possibleDependents(Note aNote)
@@ -349,10 +354,14 @@ public class Line {
 		
 		Note aNote = myScore.get(size() - 1);
 		
-		if(!locationOfLastIncomplete.isEmpty() && locationOfLastIncomplete.peek() >= size() - 1)
+		for(int i = 0; i < locationOfLastIncomplete.size(); i++)
 		{
-			locationOfLastIncomplete.pop();
-			requiredNext.pop();
+			if (locationOfLastIncomplete.get(i) >= size() - 1)
+			{
+				locationOfLastIncomplete.remove(i);
+				requiredNext.remove(i);
+				i--;
+			}
 		}
 		Stack<HashSet<Note>> f = fulfillments.get(fulfillments.size() - 1);
 		while(!f.isEmpty())
