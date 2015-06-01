@@ -33,58 +33,56 @@ public class Driver {
 		/**
 		 * Creates the HashMap for creating the Key
 		 */
-		for(int i=-2;i<9;i++) {
-			for(int n=0;n<12;n++) {
-				switch(n) {
-				case 0:
-					keyMap.put("C"+i, n+(i*12));
-					keyMap.put("c"+i, n+(i*12));
-					break;
-				case 1:
-					keyMap.put("C#"+i, n+(i*12));
-					keyMap.put("c#"+i, n+(i*12));
-					break;
-				case 2:
-					keyMap.put("D"+i, n+(i*12));
-					keyMap.put("d"+i, n+(i*12));
-					break;
-				case 3:
-					keyMap.put("D#"+i, n+(i*12));
-					keyMap.put("d#"+i, n+(i*12));
-					break;
-				case 4:
-					keyMap.put("E"+i, n+(i*12));
-					keyMap.put("e"+i, n+(i*12));
-					break;
-				case 5:
-					keyMap.put("F"+i, n+(i*12));
-					keyMap.put("f"+i, n+(i*12));
-					break;
-				case 6:
-					keyMap.put("F#"+i, n+(i*12));
-					keyMap.put("f#"+i, n+(i*12));
-					break;
-				case 7:
-					keyMap.put("G"+i, n+(i*12));
-					keyMap.put("g"+i, n+(i*12));
-					break;
-				case 8:
-					keyMap.put("G#"+i, n+(i*12));
-					keyMap.put("g#"+i, n+(i*12));
-					break;
-				case 9:
-					keyMap.put("A"+i, n+(i*12));
-					keyMap.put("a"+i, n+(i*12));
-					break;
-				case 10:
-					keyMap.put("A#"+i, n+(i*12));
-					keyMap.put("a#"+i, n+(i*12));
-					break;
-				case 11:
-					keyMap.put("B"+i, n+(i*12));
-					keyMap.put("b"+i, n+(i*12));
-					break;
-				}
+		for(int n=0;n<12;n++) {
+			switch(n) {
+			case 0:
+				keyMap.put("C", n+(12));
+				keyMap.put("c", n+(12));
+				break;
+			case 1:
+				keyMap.put("C#", n+(12));
+				keyMap.put("c#", n+(12));
+				break;
+			case 2:
+				keyMap.put("D", n+(12));
+				keyMap.put("d", n+(12));
+				break;
+			case 3:
+				keyMap.put("D#", n+(12));
+				keyMap.put("d#", n+(12));
+				break;
+			case 4:
+				keyMap.put("E", n+(12));
+				keyMap.put("e", n+(12));
+				break;
+			case 5:
+				keyMap.put("F", n+(12));
+				keyMap.put("f", n+(12));
+				break;
+			case 6:
+				keyMap.put("F#", n+(12));
+				keyMap.put("f#", n+(12));
+				break;
+			case 7:
+				keyMap.put("G", n+(12));
+				keyMap.put("g", n+(12));
+				break;
+			case 8:
+				keyMap.put("G#", n+(12));
+				keyMap.put("g#", n+(12));
+				break;
+			case 9:
+				keyMap.put("A", n+(12));
+				keyMap.put("a", n+(12));
+				break;
+			case 10:
+				keyMap.put("A#", n+(12));
+				keyMap.put("a#", n+(12));
+				break;
+			case 11:
+				keyMap.put("B", n+(12));
+				keyMap.put("b", n+(12));
+				break;
 			}
 		}
 		
