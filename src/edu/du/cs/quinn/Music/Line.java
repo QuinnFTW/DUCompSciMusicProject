@@ -1,5 +1,7 @@
 /**
- * 
+ * Handles the creation and population of
+ * the lines necessary for the counterpoint
+ * composition.
  * 
  * @author Griffin Good
  * @date 5/30/15
@@ -25,6 +27,12 @@ public class Line {
 	private int maxPitch;
 	private static final Random rand = new Random();
 	
+	/**
+	 * Constructor for the Line.
+	 * 
+	 * @param minPitch
+	 * @param maxPitch
+	 */
 	public Line(int minPitch, int maxPitch) {
 		this.minPitch = minPitch;
 		this.maxPitch = maxPitch;
@@ -43,6 +51,11 @@ public class Line {
 		possibleNotes.add(allowableNotes);
 	}
 	
+	/**
+	 * Adds a note to the Line
+	 * 
+	 * @param tryToFinish Set to true if you want the composition to end.
+	 */
 	public Note addNote(boolean tryToFinish) {
 		
 		Set<Note> possibilities = possibleNotes.get(possibleNotes.size() - 1).keySet();
@@ -80,7 +93,7 @@ public class Line {
 		return aNote;
 	}
 	
-	// does the meat of the work adding notes
+	//does the meat of the work adding notes
 	private void addNote(Note aNote)
 	{
 		// if this note resolves anything, tie the things it resolves to its location
@@ -141,6 +154,12 @@ public class Line {
 		return requiredNext.size();
 	}
 	
+	/**
+	 * Returns the note at a specific index.
+	 * 
+	 * @param index Index to check for a note.
+	 * @return The note at the specified index.
+	 */
 	public Note getNote(int index) {
 		return myScore.get(index);
 	}
@@ -250,11 +269,21 @@ public class Line {
 		return resolution;
 	}
 	
+	/**
+	 * Checks if the Line can contain another note.
+	 * 
+	 * @return True if there is another note, false otherwise
+	 */
 	public boolean hasNextNote()
 	{
 		return !possibleNotes.get(possibleNotes.size() - 1).isEmpty();
 	}
 	
+	/**
+	 * Returns true if the line is finished. 
+	 * 
+	 * @return True if the line is finished, false otherwise
+	 */
 	public boolean isFinished()
 	{
 		return !myScore.isEmpty() && requiredNext.isEmpty();
@@ -308,6 +337,9 @@ public class Line {
 		return possibilities;
 	}
 	
+	/**
+	 * Removes the ending final note from the line.
+	 */
 	public void removeEndNote() {
 		if (size() == 0)
 		{
@@ -339,11 +371,20 @@ public class Line {
 		myScore.remove(size() - 1);
 	}
 	
+	/**
+	 * Attempts to remove a note from the Line 
+	 * 
+	 * @param aNote The note to remove
+	 */
 	public void removeNextNote(Note aNote)
 	{
 		possibleNotes.get(possibleNotes.size() - 1).remove(aNote);
 	}
 	
+	/**
+	 * Resets the list of possible notes to add to
+	 * the line.
+	 */
 	public void resetPossibilities()
 	{
 		possibleNotes.remove(possibleNotes.size() - 1);
@@ -362,6 +403,12 @@ public class Line {
 		}
 	}
 	
+	/**
+	 * Selects a random note to add to the list.
+	 * 
+	 * @param set
+	 * @return Note
+	 */
 	public static Note selectRandom(Set<Note> set)
 	{
 		int choose = rand.nextInt(set.size());
@@ -423,11 +470,19 @@ public class Line {
 		
 	}
 	
+	/**
+	 * Returns the size of the line.
+	 * 
+	 * @return size
+	 */
 	public int size()
 	{
 		return myScore.size();
 	}
 	
+	/**
+	 * Converts the Line into a string.
+	 */
 	public String toString()
 	{
 		String string = "";

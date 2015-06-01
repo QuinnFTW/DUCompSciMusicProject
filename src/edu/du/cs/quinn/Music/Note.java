@@ -1,5 +1,6 @@
 /**
- * 
+ * This class handles all the functions of a
+ * single note.
  * 
  * @author Griffin Good
  * @date 5/30/15
@@ -12,12 +13,21 @@ public class Note {
 	private int pitch;
 	private int degree;
 	
+	/**
+	 * Constructor for the Note class.
+	 * 
+	 * @param relativePitchClass
+	 * @param scaleDegree
+	 */
 	public Note(int relativePitchClass, int scaleDegree)
 	{
 		pitch = relativePitchClass;
 		degree = scaleDegree;
 	}
 	
+	/**
+	 * Checks if one note is equal to this note.
+	 */
 	public boolean equals(Object other)
 	{
 		if (other == null || other.getClass() != Note.class)
@@ -28,20 +38,39 @@ public class Note {
 		return (this.pitch == otherNote.pitch) && (this.degree == otherNote.degree);
 	}
 	
+	/**
+	 * Returns the degree of the note.
+	 * 
+	 * @return degree
+	 */
 	public int getDegree()
 	{
 		return degree;
 	}
 	
+	/**
+	 * Returns the pitch of the note.
+	 * 
+	 * @return pitch
+	 */
 	public int getPitch() {
 		return pitch;
 	}
 	
+	/**
+	 * Returns the hashCode of the note.
+	 */
 	public int hashCode()
 	{
 		return pitch * 2 - degree;
 	}
 	
+	/**
+	 * Returns the interval of the note.
+	 * 
+	 * @param upperNote Maximum note
+	 * @return intervalType
+	 */
 	public int intervalType(Note upperNote)
 	{
 		int upperDegree = upperNote.degree;
@@ -58,6 +87,12 @@ public class Note {
 		return tempType + 2;
 	}
 	
+	/**
+	 * Checks if the interval of the note and another note is consonant.
+	 * 
+	 * @param upperNote Maximum note
+	 * @return true if the interval is consonant, false otherwise
+	 */
 	public boolean isIntervalConsonant(Note upperNote)
 	{
 		boolean perfect;
@@ -99,6 +134,9 @@ public class Note {
 		return perfectOrMajorDistance == actualDistance || (!perfect && actualDistance == perfectOrMajorDistance - 1);
 	}
 	
+	/**
+	 * Returns the note as a string
+	 */
 	public String toString()
 	{
 		return "Note with a pitch of " + pitch + " and degree of " + degree;
